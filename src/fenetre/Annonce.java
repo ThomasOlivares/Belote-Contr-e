@@ -2,9 +2,6 @@ package fenetre;
 
 public class Annonce{
 	
-	/**
-	 * 
-	 */
 	public String valeur = "0";
 	public String couleur = "";
 	public String joueur = "";
@@ -18,6 +15,11 @@ public class Annonce{
 	}
 	
 	public Annonce(){
+	}
+	
+	public String toString(){
+		return "Annonce de " + valeur + " " + couleur + " par " + joueur + 
+				((contre) ? " contrée " : "") + ((surcontre) ? "et surcontrée" : "");
 	}
 
 }
