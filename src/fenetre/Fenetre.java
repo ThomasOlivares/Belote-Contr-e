@@ -49,7 +49,7 @@ public class Fenetre extends JFrame implements ActionListener{
 	private JMenuItem item6 = new JMenuItem("Item");
 	private static Instance PartieEnCours = new Instance("MenuPrincipal");
 	private Boolean go = false;
-	public static String[] noms = {"Paul", "Martin", "Méric", "Thomas"};
+	public static String[] noms = {"Paul", "Martin", "Meric", "Thomas"}; // Meric ça s'écrit sans accent!^^
 	
 	//---------  Variables de la phase d'annonce -----------
 	private boolean ecouteAnnonce = false; //Indique si c'est au tour du joueur d'annoncer
@@ -91,6 +91,13 @@ public class Fenetre extends JFrame implements ActionListener{
     private String[] Couleurs = {"trefle", "carreau","coeur","pique"};
     private String[] OrdreCartesNonAtout = {"as","10","roi","dame","valet","9","8","7",""};
     private String[] OrdreCartesAtout = {"valet","9","as","10","roi","dame","8","7",""};
+    private int ScoreIAProvisoire = 0 ;
+    private int ScoreJoueurProvisoire = 0 ;
+    private int ScoreJoueur = 0 ;
+    private int ScoreIA = 0 ;
+    private int WinScore = 1000 ;
+    private boolean pliIA = false ;
+    private boolean pliJoueur = false ;
     
     // ----------Variables mixtes ---------------
     private double vitesse = 1; //Indique la vitesse de jeu
@@ -346,6 +353,7 @@ public class Fenetre extends JFrame implements ActionListener{
 		
 		setMenu();
 		    
+		shuffle();
 		distribue();
 		trier();
 		
@@ -370,7 +378,7 @@ public class Fenetre extends JFrame implements ActionListener{
     
     public void go(){
 		
-		while(true){  //Boucle principale gérant la partie, il faudra remplacer true par une condition sur le score dans le futur
+		while(ScoreJoueur < WinScore && ScoreIA < WinScore){  // WinScore par defaut a 1000
 			this.setSize(1202, 720); //Ces deux lignes servent a forcer le programme à réactualiser la fenêtre (j'ai pas trouver mieux)
 			this.setSize(1202, 719);
 			Phase_annonces();
@@ -382,15 +390,24 @@ public class Fenetre extends JFrame implements ActionListener{
 			while(carte_jouer<8){  //Boucle gérant une partie en phase de jeu
 				container.entame = entame;  //On précise au plateau quelle carte il dessine en dessous des autres
 				int i=entame;  //i est le numero du joueur qui joue 
-				for (int j = 0; j<4; j++){  //boucle gérant un tour
+				for (int j = 0; j<4 ; j++){  //boucle gérant un tour
 					if (i==0)
 						play_joueur();
 					else play_IA(i);
 					i=(i+1)%4;
 				}
 				entame = (checkGagnant() + entame)%4; //On regarde qui remporte le pli
-				for (Carte j: CartesPlateau)
+				for (Carte j: CartesPlateau){
+					if (checkGagnant() == 0 || checkGagnant() == 2){
+						ScoreJoueurProvisoire += value(j) ;
+						pliJoueur = true ;
+					}
+					else {
+						ScoreIAProvisoire += value(j) ;
+						pliIA = true ;
+					}
 					CartesTombees.add(j);
+				}
 				CartesPlateau = new LinkedList<Carte>();
 				ActualiseCartesMaitres();
 				pause((int)(500/vitesse));
@@ -401,9 +418,48 @@ public class Fenetre extends JFrame implements ActionListener{
 				container.repaint();
 				carte_jouer++;
 				pause((int)(500/vitesse));
+//				10 de der
+				if (carte_jouer == 7 && (checkGagnant() == 0 || checkGagnant() == 2)) ScoreJoueurProvisoire += 10 ;
+				if (carte_jouer == 7 && (checkGagnant() == 1 || checkGagnant() == 3)) ScoreIAProvisoire += 10 ;
 			}
+//			On compte les points de la manche
+			if ((AnnonceGagnante.joueur == "0" || AnnonceGagnante.joueur == "2") && AnnonceGagnante.valeur != "capot"){
+				if (ScoreJoueurProvisoire >= Integer.parseInt(AnnonceGagnante.valeur)){
+					ScoreJoueur += Integer.parseInt(AnnonceGagnante.valeur) ;
+				}
+				else {
+					ScoreIA += Integer.parseInt(AnnonceGagnante.valeur) ;
+				}
+			}
+			if ((AnnonceGagnante.joueur == "1" || AnnonceGagnante.joueur == "3") && AnnonceGagnante.valeur != "capot"){
+				if (ScoreIAProvisoire >= Integer.parseInt(AnnonceGagnante.valeur)){
+					ScoreIA += Integer.parseInt(AnnonceGagnante.valeur) ;
+				}
+				else {
+					ScoreJoueur += Integer.parseInt(AnnonceGagnante.valeur) ;
+				}
+			}
+			if(AnnonceGagnante.valeur == "capot"){
+				if(AnnonceGagnante.joueur == "1" || AnnonceGagnante.joueur == "3"){
+					if(pliJoueur = false){
+						ScoreIA += 260 ;
+					}
+					else ScoreJoueur += 260 ;
+				}
+				if(AnnonceGagnante.joueur == "0" || AnnonceGagnante.joueur == "2"){
+					if(pliIA = false){
+						ScoreJoueur+= 260 ;
+					}
+					else ScoreIA += 260 ;
+				}
+			}
+			pliIA = false;
+			pliJoueur = false ;
+			ScoreIAProvisoire = 0 ;
+			ScoreJoueurProvisoire = 0 ;
 			premier = (premier+1)%4;  //On change le joueur qui commence
 			initialise();
+			cut();
 			distribue();
 			trier();
 			reboot();   //Rend toutes les cartes de nouveau visibles et réaffiche les boutons d'annonces
@@ -1652,15 +1708,70 @@ public class Fenetre extends JFrame implements ActionListener{
 		}
 		
 		public void distribue(){
-			int taille = Liste_Cartes.size();
-			for (int j = 0; j<4; j++){
-				for (int c = 0; c<8; c++){
-					int num = (int)(Math.random()*taille);
-					Joueurs[j][c]=Liste_Cartes.get(num);
-					Liste_Cartes.remove(num);
-					taille--;
+			
+			int quiRecoit = premier ;
+			int nbCartes = 2 ;
+			int nbDonne = 0 ;
+			for (int j = 0; j<12 ; j++){
+				for (int i = 0 ; i<nbCartes ; i++){
+					Joueurs[quiRecoit][i+nbDonne] = Liste_Cartes.get(0) ;
+					Liste_Cartes.remove(0) ;
 				}
+				quiRecoit = (quiRecoit+1)%4 ;
+				if (j == 3 || j == 7){ nbDonne = nbDonne + nbCartes ; nbCartes = 3 ; }
 			}
+		}
+		
+		public void shuffle(){
+			int taille = Liste_Cartes.size();
+			List<Carte> provisoire = new LinkedList<Carte>();
+			for (int j = 0; j<32 ; j++){
+				int num = (int)(Math.random()*(double)taille);
+				provisoire.add(Liste_Cartes.get(num));
+				Liste_Cartes.remove(num);
+				taille--;
+			}
+			Liste_Cartes = provisoire ;
+		}
+				
+		public void cut(){
+			List<Carte> provisoire1 = new LinkedList<Carte>();
+			List<Carte> provisoire2 = new LinkedList<Carte>();
+			int num = (int)(Math.random()*32);
+			for (int i = 0; i < num ; i++){
+				provisoire1.add(Liste_Cartes.get(0));
+				Liste_Cartes.remove(0);
+			}
+			for (int i = num+1; i < 32 ; i++){
+				provisoire2.add(Liste_Cartes.get(0));
+				Liste_Cartes.remove(0);
+			}
+			for (int i = 0; i < provisoire1.size(); i++){
+				Liste_Cartes.add(provisoire1.get(i));
+			}
+			for (int i = 0; i < provisoire2.size() ; i++){
+				Liste_Cartes.add(provisoire2.get(i));
+			}
+			
+		}
+		
+		public int value(Carte test){
+			Atout = AnnonceGagnante.couleur;
+			if (test.valeur == "as" )
+				return 11 ;
+			if (test.valeur == "roi")
+				return 4 ;
+			if (test.valeur == "dame")
+				return 3 ;
+			if (test.valeur == "10")
+				return 10 ;
+			if (test.valeur == "valet" && Atout == test.couleur)
+				return 20 ;
+			if (test.valeur == "9" && Atout == test.couleur)
+				return 14 ;
+			if (test.valeur == "valet" && Atout != test.couleur)
+				return 2 ; 
+			return 0 ;
 		}
 		
 		public void trier(){  //Fonctionne sur la base du tri rapide aussi appelé tri à bulles
@@ -1820,7 +1931,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			}
 		}
 		
-		public int checkGagnant(){
+		public int checkGagnant(){ // Renvoie num gagnat pli
 			boolean atout = false;
 			int gagnante = 0;
 			String couleurDemandee = CartesPlateau.get(0).couleur;
