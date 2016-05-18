@@ -441,13 +441,13 @@ public class Fenetre extends JFrame implements ActionListener{
 			}
 			if(AnnonceGagnante.valeur == "capot"){
 				if(AnnonceGagnante.joueur == "1" || AnnonceGagnante.joueur == "3"){
-					if(pliJoueur = false){
+					if(pliJoueur == false){
 						ScoreIA += 260 ;
 					}
 					else ScoreJoueur += 260 ;
 				}
 				if(AnnonceGagnante.joueur == "0" || AnnonceGagnante.joueur == "2"){
-					if(pliIA = false){
+					if(pliIA == false){
 						ScoreJoueur+= 260 ;
 					}
 					else ScoreIA += 260 ;
