@@ -7,29 +7,28 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 /**
- * Cette version est un prototype.
- * Les cartes des adversaires sont visible pour l'instant
- * car elles nous sont necessaires pour tester notre code, 
- * elles ne seront bien sur pas visibles pour l'utilisateur
- * sur la version dÈfinitive.
- * @authors Thomas, Meric, Paul, Martin
+ * @authors Thomas, Paul, Meric, Martin
  */
 public class Fenetre extends JFrame implements ActionListener{
 	
@@ -46,10 +45,11 @@ public class Fenetre extends JFrame implements ActionListener{
 	private JMenuItem menuPrincipal = new JMenuItem("Menu Principal");
 	private JMenuItem quitter = new JMenuItem("Quitter le jeu");
 	private JMenuItem dernierPli = new JMenuItem("Voir dernier pli");
-	private JMenuItem item6 = new JMenuItem("Item");
+	private JMenuItem score = new JMenuItem("Score g√©n√©ral");
+	private JMenuItem regles = new JMenuItem("R√®gles");
 	private static Instance PartieEnCours = new Instance("MenuPrincipal");
 	private Boolean go = false;
-	public static String[] noms = {"Paul", "Martin", "Meric", "Thomas"}; // Meric Áa s'Ècrit sans accent!^^
+	public static String[] noms = {"Paul", "Martin", "Meric", "Thomas"};
 	
 	//---------  Variables de la phase d'annonce -----------
 	private boolean ecouteAnnonce = false; //Indique si c'est au tour du joueur d'annoncer
@@ -59,24 +59,27 @@ public class Fenetre extends JFrame implements ActionListener{
 	private List<BoutonAnnonces> annonceTrefle = new LinkedList<BoutonAnnonces>();
 	private List<JButton> annonceSpecial = new LinkedList<JButton>();
 	private int passe=0;   //Compte le nombre de joueurs qui passent leur tour
-	private Annonce AnnonceGagnante = new Annonce();   //Indique la derniËre annonce effectuÈe
-	private JPanel annonc; // Panneau gÈrant tous les boutons d'annonces
+	public static Annonce AnnonceGagnante = new Annonce();   //Indique la derni√®re annonce effectu√©e
+	private JPanel annonc; // Panneau g√©rant tous les boutons d'annonces
 	private LabelAnnonce AnnonceBas = new LabelAnnonce("---");  // Affichage des annonces (en rouge)
 	private LabelAnnonce AnnonceGauche = new LabelAnnonce("---");
 	private LabelAnnonce AnnonceHaut = new LabelAnnonce("---");
 	private LabelAnnonce AnnonceDroite = new LabelAnnonce("---");
+	private List<Annonce> AnnonceJoueur = new LinkedList<Annonce>();
+	private List<Annonce> AnnonceIA = new LinkedList<Annonce>();
 	
 	//---------  Variables de la phase de jeu -----------
 	private boolean ecouteJoue = false; //Indique si c'est au tour du joueur de jouer
-	private Carte[][] Joueurs = new Carte[4][8];  //Les cartes des joueur : la premiËre ligne reprÈsente les cartes du joueur, les 3 autres celles des IA
-	private Panneau container = new Panneau();  //Panneau gÈnÈral englobant tous les composants
+	//Les cartes des joueur : la premi√®re ligne repr√©sente les cartes du joueur, les 3 autres celles des IA
+	private Carte[][] Joueurs = new Carte[4][8];
+	private Panneau container = new Panneau();  //Panneau g√©n√©ral englobant tous les composants
 	private JPanel bas = new JPanel();   // Panneaux contenants les cartes des joueurs
     private JPanel gauche = new JPanel();
     private JPanel droite = new JPanel();
     private JPanel haut = new JPanel();
-    private List<Bouton> Boutons = new LinkedList<Bouton>();  // Liste des Cartes du joueur rÈel
-    private List<Carte> Liste_Cartes = new LinkedList<Carte>();  //Liste des cartes utilisÈe (ce n'est pas le paquet)
-    private Joueur Humain = new Joueur("humain");
+    private List<Bouton> Boutons = new LinkedList<Bouton>();  // Liste des Cartes du joueur r√©el
+    //Liste des cartes utilis√©e (ce n'est pas le paquet)
+    private List<Carte> Liste_Cartes = new LinkedList<Carte>();  
     private Joueur JoueurGauche = new Joueur("gauche");
     private Joueur JoueurHaut = new Joueur("haut");
     private Joueur JoueurDroite = new Joueur("droite");
@@ -91,31 +94,35 @@ public class Fenetre extends JFrame implements ActionListener{
     private String[] Couleurs = {"trefle", "carreau","coeur","pique"};
     private String[] OrdreCartesNonAtout = {"as","10","roi","dame","valet","9","8","7",""};
     private String[] OrdreCartesAtout = {"valet","9","as","10","roi","dame","8","7",""};
-    private int ScoreIAProvisoire = 0 ;
-    private int ScoreJoueurProvisoire = 0 ;
-    private int ScoreJoueur = 0 ;
-    private int ScoreIA = 0 ;
-    private int WinScore = 1000 ;
+    public static int ScoreIAProvisoire = 0 ;
+    public static int ScoreJoueurProvisoire = 0 ;
+    public static int ScoreJoueur = 0 ;
+    public static int ScoreIA = 0 ;
+    public static int WinScore = 1000 ;  //Score n√©cessaire pour gagner
     private boolean pliIA = false ;
     private boolean pliJoueur = false ;
     
     // ----------Variables mixtes ---------------
-    private double vitesse = 1; //Indique la vitesse de jeu
-    private int premier = 0;  // Indique qui commence a jouer, 0 : joueur, 1 : IAgauche, 2 : IAhaut, 3 : IAdroite
+    private double vitesse = 1; //Indique la vitesse de jeu : 1=normal
+    // Indique qui commence a jouer, 0 : joueur, 1 : IAgauche, 2 : IAhaut, 3 : IAdroite
+    private int premier = 0;
     private String etat = "MenuPrincipal"; //Indique la phase de jeu actuelle
     private JButton NvPartie;
-    private JButton ChargerPartie;
+    private JButton Regles;
     private JButton Options;
-    private String Atout = "";
+    public static String Atout = "aucun";  //Couleur de l'atout
+    public static Boolean masquer = true; //indique si on masque les cartes des IA (jeu normal) ou non (tests)
     
     /**
      * Programme principal, 
      * comporte une phase d'initialisation puis l'appel de la fonction
-     * go() qui gËre le dÈroulement du jeu
+     * correspondant √† la phase de jeu dans laquelle on se trouve.
      */
     
     public Fenetre(String phase){
     	
+    	ScoreJoueurProvisoire = 0;
+    	ScoreIAProvisoire = 0;
     	etat = phase;
     	
     	this.setTitle("Plateau de jeu");
@@ -130,11 +137,14 @@ public class Fenetre extends JFrame implements ActionListener{
     			PlateauJeu();
     		else if (etat == "options")
     			Options();
+    		else if (etat == "regles")
+    			Regles();
+    		else if (etat == "fin")
+    			FinPartie(ScoreJoueur>ScoreIA); //On lance l'√©cran victoire/d√©faite
     	}
    	}
     
     public void setMenu(){
-    	partie.add(lancer);
     	lancer.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {  //On change de thread pour un nouveau
     			dispose();
@@ -171,9 +181,31 @@ public class Fenetre extends JFrame implements ActionListener{
 				}
     		}
     	});
+    	score.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(null, "Score Joueur : " + ScoreJoueur + "\nScore IA : " + ScoreIA, 
+						"Score", JOptionPane.INFORMATION_MESSAGE);
+    		}
+    	});
+    	String message = "La contr√©e est un jeu de cartes √† ench√®res." + '\n' + 
+				"Dans un premier temps, les joueurs se mettent d'accord" + '\n' + 
+				"sur la couleur qui sera l'atout au moyen d'ench√®res." + '\n' +
+				"L'ench√®re la plus √©lev√©e d√©finie l'atout mais aussi" + '\n' +
+				"le nombre de points que l'√©quipe doit effectuer pour" + '\n' +
+				"remplir son contrat." + '\n' +
+				"Dans un second temps, la phase de jeu intervient, et o√π" + '\n' +
+				"chaque √©quipe doit faire un maximum de plis afin de" + '\n' +
+				"remplir son contrat ou emp√™cher les adversaires de remplir le leur.";
+    	regles.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(null, message, "Regles", JOptionPane.INFORMATION_MESSAGE);
+    		}
+    	});
+    	partie.add(lancer);
     	partie.add(quitter);
     	jeu.add(dernierPli);
-    	aPropos.add(item6);
+    	jeu.add(score);
+    	aPropos.add(regles);
     	this.menuBar.add(partie);
         this.menuBar.add(jeu);
         this.menuBar.add(aPropos);
@@ -224,25 +256,31 @@ public class Fenetre extends JFrame implements ActionListener{
     	Font police = new Font("Tahoma", Font.BOLD, 30);
     	Font police2 = new Font("Tahoma", Font.BOLD, 50);
     	
-    	JLabel Bienvenue = new JLabel("Bienvenue sur le plateau de contrÈe");
+    	JLabel Bienvenue = new JLabel("Bienvenue sur le plateau de contr√©e");
     	NvPartie = new JButton("Nouvelle Partie");
-    	ChargerPartie = new JButton("Charger Partie");
+    	Regles = new JButton("R√®gles du jeu");
     	Options = new JButton("Options");
     	
     	Bienvenue.setFont(police2);
     	Bienvenue.setForeground(Color.RED);
     	Bienvenue.setHorizontalAlignment(JLabel.CENTER);
     	NvPartie.setFont(police);
-    	ChargerPartie.setFont(police);
+    	Regles.setFont(police);
     	Options.setFont(police);
     	
     	NvPartie.setPreferredSize(new Dimension(500,80));
-    	ChargerPartie.setPreferredSize(new Dimension(500,80));
+    	Regles.setPreferredSize(new Dimension(500,80));
     	Options.setPreferredSize(new Dimension(500,80));
     	
     	NvPartie.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) { 
 				etat = "jeu";
+    		}
+    	});
+    	
+    	Regles.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) { 
+				etat = "regles";
     		}
     	});
     	
@@ -263,7 +301,7 @@ public class Fenetre extends JFrame implements ActionListener{
 
         JPanel pan3 = new JPanel();
         pan3.setOpaque(false);
-        pan3.add(ChargerPartie);
+        pan3.add(Regles);
         
         JPanel pan4 = new JPanel();
         pan4.setOpaque(false);
@@ -285,12 +323,13 @@ public class Fenetre extends JFrame implements ActionListener{
     public void Options(){
     	
     	Menu opt = new Menu();
-    	opt.setLayout(new GridLayout(5,1,5,5));
+    	opt.setLayout(new GridLayout(6,1,5,5));
     	Font police = new Font("Tahoma", Font.BOLD, 30);
-    	JLabel[] texte = {new JLabel("Nom joueur : "), new JLabel("Nom IA gauche : "), 
-    			new JLabel("Nom IA haut : "), new JLabel("Nom IA droite : ")};
+    	JLabel[] texte = {new JLabel("Nom joueur : "), new JLabel("Nom IA gauche : "), //Champs de textes
+    			new JLabel("Nom IA haut : "), new JLabel("Nom IA droite : "), new JLabel("Score pour gagner : ")};
     	JTextField[] text = new JTextField[4];
-    	JPanel[] pan = new JPanel[4];
+    	JComboBox<Integer> win = new JComboBox<Integer>();   //Choix multiples
+    	JPanel[] pan = new JPanel[5];
     	for (int i = 0; i<4; i++){
     		texte[i].setFont(police);
     		texte[i].setForeground(Color.YELLOW);
@@ -302,6 +341,18 @@ public class Fenetre extends JFrame implements ActionListener{
         	pan[i].add(text[i]);
         	opt.add(pan[i]);
     	}
+    	win.setPreferredSize(new Dimension(200,40));
+    	win.addItem(1000);
+    	win.addItem(2000);
+    	win.addItem(3000);
+    	win.addItemListener(new ItemState());
+    	texte[4].setFont(police);
+		texte[4].setForeground(Color.YELLOW);
+    	pan[4] = new JPanel();
+		pan[4].setOpaque(false);
+		pan[4].add(texte[4]);
+    	pan[4].add(win);
+    	opt.add(pan[4]);
     	
     	JPanel valider = new JPanel();
     	valider.setOpaque(false);
@@ -323,7 +374,7 @@ public class Fenetre extends JFrame implements ActionListener{
     	this.setContentPane(opt);
     	this.setVisible(true);
     	
-    	while(!go){
+    	while(!go){  //On attend le joueur
     		pause(5);
     	}
     	
@@ -336,7 +387,34 @@ public class Fenetre extends JFrame implements ActionListener{
     	go =false;
     }
     
-    public void PlateauJeu(){
+    class ItemState implements ItemListener{  //Prise en compte du choix du joueur sur le score maximum pour gagner
+    	
+	    public void itemStateChanged(ItemEvent e) {
+	        WinScore = (int)e.getItem();
+	    }               
+
+	  }
+    
+    public void Regles(){
+    	Menu regles = new Menu(true);
+    	regles.setLayout(new BorderLayout());
+    	JPanel pan1 = new JPanel();
+    	pan1.setOpaque(false);
+    	JButton ok = new JButton("OK");
+    	ok.setPreferredSize(new Dimension(100,50));
+    	ok.addActionListener(new ActionListener(){
+    		public void actionPerformed(ActionEvent e){
+    			etat = "MenuPrincipal";
+    		}
+    	});
+    	pan1.add(ok);
+    	regles.add(pan1, BorderLayout.SOUTH);
+    	this.setContentPane(regles);
+    	this.setVisible(true);
+    	while(etat == "regles"){ pause(5); } //On attend le joueur
+    }
+    
+    public void PlateauJeu(){  //Sous fonction correspondant √† la phase de jeu
     	
     	initialise();  //initialise les 32 cartes
     	
@@ -357,7 +435,7 @@ public class Fenetre extends JFrame implements ActionListener{
 		distribue();
 		trier();
 		
-		initialiseAnnonces();  //Place tous les boutons liÈs aux annonces
+		initialiseAnnonces();  //Place tous les boutons li√©s aux annonces
 		    
 		container.add(droite, BorderLayout.EAST);
 		container.add(gauche, BorderLayout.WEST);
@@ -379,26 +457,29 @@ public class Fenetre extends JFrame implements ActionListener{
     public void go(){
 		
 		while(ScoreJoueur < WinScore && ScoreIA < WinScore){  // WinScore par defaut a 1000
-			this.setSize(1202, 720); //Ces deux lignes servent a forcer le programme ‡ rÈactualiser la fenÍtre (j'ai pas trouver mieux)
+			this.setSize(1202, 720); //Ces deux lignes servent a forcer le programme √† r√©actualiser la fen√™tre
 			this.setSize(1202, 719);
+			Atout = "aucun";
 			Phase_annonces();
-			Atout = AnnonceGagnante.couleur;
+			Atout = AnnonceGagnante.getCouleur();
+			this.getContentPane().repaint();
 			InitialiseCartesMaitres();
 			int entame = premier;
-			int carte_jouer = 0;  //indique le nombre de carte dÈj‡ jouÈes
+			int carte_jouer = 0;  //indique le nombre de carte d√©j√† jou√©es
 			pause((int)(1000/vitesse));
-			while(carte_jouer<8){  //Boucle gÈrant une partie en phase de jeu
-				container.entame = entame;  //On prÈcise au plateau quelle carte il dessine en dessous des autres
+			while(carte_jouer<8){  //Boucle g√©rant une partie en phase de jeu
+				//On pr√©cise au plateau quelle carte il dessine en dessous des autres
+				container.entame = entame;  
 				int i=entame;  //i est le numero du joueur qui joue 
-				for (int j = 0; j<4 ; j++){  //boucle gÈrant un tour
+				for (int j = 0; j<4 ; j++){  //boucle g√©rant un tour
 					if (i==0)
 						play_joueur();
-					else play_IA(i);
+					else 
+						play_IA(i);
 					i=(i+1)%4;
 				}
-				entame = (checkGagnant() + entame)%4; //On regarde qui remporte le pli
 				for (Carte j: CartesPlateau){
-					if (checkGagnant() == 0 || checkGagnant() == 2){
+					if ((checkGagnant() + entame)%4 == 0 || (checkGagnant() + entame)%4 == 2){
 						ScoreJoueurProvisoire += value(j) ;
 						pliJoueur = true ;
 					}
@@ -408,6 +489,8 @@ public class Fenetre extends JFrame implements ActionListener{
 					}
 					CartesTombees.add(j);
 				}
+				int GagnantFinal = (checkGagnant() + entame)%4;
+				entame = (checkGagnant() + entame)%4; //On regarde qui remporte le pli
 				CartesPlateau = new LinkedList<Carte>();
 				ActualiseCartesMaitres();
 				pause((int)(500/vitesse));
@@ -419,38 +502,52 @@ public class Fenetre extends JFrame implements ActionListener{
 				carte_jouer++;
 				pause((int)(500/vitesse));
 //				10 de der
-				if (carte_jouer == 7 && (checkGagnant() == 0 || checkGagnant() == 2)) ScoreJoueurProvisoire += 10 ;
-				if (carte_jouer == 7 && (checkGagnant() == 1 || checkGagnant() == 3)) ScoreIAProvisoire += 10 ;
+				if (carte_jouer == 7 && (GagnantFinal == 0 || GagnantFinal == 2)) ScoreJoueurProvisoire += 10 ;
+				if (carte_jouer == 7 && (GagnantFinal == 1 || GagnantFinal == 3)) ScoreIAProvisoire += 10 ;
 			}
+			pause((int)(2000/vitesse));
 //			On compte les points de la manche
-			if ((AnnonceGagnante.joueur == "0" || AnnonceGagnante.joueur == "2") && AnnonceGagnante.valeur != "capot"){
-				if (ScoreJoueurProvisoire >= Integer.parseInt(AnnonceGagnante.valeur)){
-					ScoreJoueur += Integer.parseInt(AnnonceGagnante.valeur) ;
+			if ((AnnonceGagnante.getJoueur() == 0 || AnnonceGagnante.getJoueur() == 2) && 
+					AnnonceGagnante.getValeur() != 250){
+				if (ScoreJoueurProvisoire >= AnnonceGagnante.getValeur() && AnnonceGagnante.getContre()){
+					ScoreJoueur += 2*AnnonceGagnante.getValeur();
 				}
+				else if(ScoreJoueurProvisoire >= AnnonceGagnante.getValeur())
+					ScoreJoueur += AnnonceGagnante.getValeur() ;
 				else {
-					ScoreIA += Integer.parseInt(AnnonceGagnante.valeur) ;
+					ScoreIA += 160 ;
 				}
 			}
-			if ((AnnonceGagnante.joueur == "1" || AnnonceGagnante.joueur == "3") && AnnonceGagnante.valeur != "capot"){
-				if (ScoreIAProvisoire >= Integer.parseInt(AnnonceGagnante.valeur)){
-					ScoreIA += Integer.parseInt(AnnonceGagnante.valeur) ;
+			if ((AnnonceGagnante.getJoueur() == 1 || AnnonceGagnante.getJoueur() == 3) 
+					&& AnnonceGagnante.getValeur() != 250){
+				if (ScoreIAProvisoire >= AnnonceGagnante.getValeur() && AnnonceGagnante.getContre()){
+					ScoreIA += 2*AnnonceGagnante.getValeur();
+				}
+				else if (ScoreIAProvisoire >= AnnonceGagnante.getValeur()){
+					ScoreIA += AnnonceGagnante.getValeur();
 				}
 				else {
-					ScoreJoueur += Integer.parseInt(AnnonceGagnante.valeur) ;
+					ScoreJoueur += 160 ;
 				}
 			}
-			if(AnnonceGagnante.valeur == "capot"){
-				if(AnnonceGagnante.joueur == "1" || AnnonceGagnante.joueur == "3"){
-					if(pliJoueur == false){
-						ScoreIA += 260 ;
+			if(AnnonceGagnante.getValeur() == 250){
+				if(AnnonceGagnante.getJoueur() == 1 || AnnonceGagnante.getJoueur() == 3){
+					if(pliJoueur == false && AnnonceGagnante.getContre()){
+						ScoreIA += 500 ;
 					}
-					else ScoreJoueur += 260 ;
+					else if(pliJoueur == false){
+						ScoreIA += 250 ;
+					}
+					else ScoreJoueur += 160 ;
 				}
-				if(AnnonceGagnante.joueur == "0" || AnnonceGagnante.joueur == "2"){
-					if(pliIA == false){
-						ScoreJoueur+= 260 ;
+				if(AnnonceGagnante.getJoueur() == 0 || AnnonceGagnante.getJoueur() == 2){
+					if(pliIA == false && AnnonceGagnante.getContre()){
+						ScoreJoueur+= 500 ;
 					}
-					else ScoreIA += 260 ;
+					else if(pliIA == false){
+						ScoreJoueur+= 250 ;
+					}
+					else ScoreIA += 160 ;
 				}
 			}
 			pliIA = false;
@@ -458,14 +555,65 @@ public class Fenetre extends JFrame implements ActionListener{
 			ScoreIAProvisoire = 0 ;
 			ScoreJoueurProvisoire = 0 ;
 			premier = (premier+1)%4;  //On change le joueur qui commence
-			initialise();
+			Liste_Cartes = CartesTombees;
+			CartesTombees = new LinkedList<Carte>();
 			cut();
 			distribue();
 			trier();
-			reboot();   //Rend toutes les cartes de nouveau visibles et rÈaffiche les boutons d'annonces
+			reboot();   //Rend toutes les cartes de nouveau visibles et r√©affiche les boutons d'annonces
 			pause((int)(1000/vitesse));
 		}
+		etat = "fin";
 	}
+    
+    public void FinPartie(Boolean victoire){  //Ecran victoire/d√©faite
+    	Menu fin = new Menu();
+    	Font police = new Font("Tahoma", Font.BOLD, 30);
+    	Font police2 = new Font("Tahoma", Font.BOLD, 50);
+    	fin.setLayout(new GridLayout(3,1,20,20));
+    	JLabel msg = new JLabel();
+    	msg.setFont(police2);
+    	msg.setForeground(Color.RED);
+    	if (victoire)
+    		msg.setText("F√©licitations, vous avez gagn√©");
+    	else
+    		msg.setText("Dommage vous avez perdu");
+    	
+    	JPanel pan1 = new JPanel();
+    	pan1.add(msg);
+    	fin.add(pan1);
+    	pan1.setOpaque(false);
+    	
+    	JPanel pan2 = new JPanel();
+    	pan2.add(NvPartie);
+    	NvPartie.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) { 
+				etat = "jeu";
+    		}
+    	});
+    	fin.add(pan2);
+    	pan2.setOpaque(false);
+    	
+    	JPanel pan3 = new JPanel();
+    	JButton quit = new JButton("Quitter la partie");
+    	quit.setFont(police);
+    	quit.setPreferredSize(new Dimension(500,80));
+    	quit.addActionListener(new ActionListener(){    // On arrete le programme
+    		public void actionPerformed(ActionEvent arg0) {
+    			System.exit(0);
+    		}
+    	});
+    	pan3.add(quit);
+    	fin.add(pan3);
+    	pan3.setOpaque(false);
+    	
+    	this.setContentPane(fin);
+    	this.setVisible(true);
+    	
+    	while(etat == "fin"){  // On attend que le joueur appui sur un bouton
+    		pause(5);
+    	}
+    }
     
     public void InitialiseCartesMaitres(){
     	if (Atout != "coeur")
@@ -512,17 +660,23 @@ public class Fenetre extends JFrame implements ActionListener{
     	return false;
     }
     
+    public boolean contient(Carte[] liste, Carte carte){
+    	for (Carte temp : liste){
+    		if (temp.equals(carte))
+    			return true;
+    	}
+    	return false;
+    }
+    
 		public void pause(int t){  // Permet de faire une pause de t ms
 			  try{
 				  Thread.sleep(t);
-
 				}catch(InterruptedException e) {
-
 				  e.printStackTrace();
 			  }
 		}
 		
-		public void actionPerformed(ActionEvent arg0) {  //Gestion de l'appui sur les boutons (les cartes du joueur)
+		public void actionPerformed(ActionEvent arg0) {  //Gestion de l'appui sur les les cartes du joueur
 			Bouton b=(Bouton)arg0.getSource();
 			if (ecouteJoue){  //On a cliquer sur un bouton
 				container.Bas = b.picture;
@@ -574,30 +728,44 @@ public class Fenetre extends JFrame implements ActionListener{
 					Boutons.get(i).repaint();
 				}
 				bas.repaint();
-				this.setSize(1202, 720); //Ces deux lignes servent a forcer le programme ‡ rÈactualiser la fenÍtre (j'ai pas trouver mieux)
+				//Ces deux lignes servent a forcer le programme √† r√©actualiser la fen√™tre
+				this.setSize(1202, 720); 
 				this.setSize(1202, 719);
 			}
 		} 
 		/**
-		 * Gestion de l'appui sur les boutons d'annonces (seulement l'affichage)
+		 * Gestion de l'appui sur les boutons d'annonces
 		 */
-		class classique implements ActionListener{
-			private String valeur;
+		class classique implements ActionListener{  //Annonces num√©riques
+			private int valeur;
 			private String couleur;
-			public classique(String val, String coul){
+			public classique(int val, String coul){
 				this.valeur=val;
 				this.couleur = coul;
 			}
 		    public void actionPerformed(ActionEvent e) {
-		    	AnnonceBas.setText(valeur + " " + couleur);
+		    	AnnonceBas.setText(((valeur == 250) ? "Capot" : valeur) + " " + couleur);
 		    	ecouteAnnonce=false;
-		    	setGagne("bas");
-		    	AnnonceGagnante=new Annonce(valeur, couleur, "joueur");
-		    	Humain.DerniereAnnonce=new Annonce(valeur, couleur, "joueur");
+		    	Annonce primaire = null;
+		    	if (AnnonceJoueur.size()!=0){
+		    		primaire = AnnonceJoueur.get(AnnonceJoueur.size()-1);
+		    	}
+		    	if (primaire == null || primaire.getJoueur() == 0 || couleur != primaire.getCouleur()){
+		    		AnnonceGagnante=new Annonce(valeur, couleur, 0, 1);
+		    		AnnonceJoueur.add(new Annonce(valeur, couleur, 0, 1));
+		    	}
+		    	else if (primaire.getNumero() == 1){
+		    		AnnonceGagnante=new Annonce(valeur, couleur, 0, 2);
+		    		AnnonceJoueur.add(new Annonce(valeur, couleur, 0, 2));
+		    	}
+		    	else{
+		    		AnnonceGagnante=new Annonce(valeur, couleur, 0, 3);
+		    		AnnonceJoueur.add(new Annonce(valeur, couleur, 0, 3));
+		    	}
 		    }
 		 }
 		
-		class special implements ActionListener{
+		class special implements ActionListener{  //Autres annonces (passe, contr√©e et surcontr√©e)
 			private String valeur;
 			public special(String val){
 				this.valeur=val;
@@ -605,49 +773,31 @@ public class Fenetre extends JFrame implements ActionListener{
 		    public void actionPerformed(ActionEvent e) {
 		    	AnnonceBas.setText(valeur);
 		    	ecouteAnnonce=false;
-		    	if (this.valeur == "ContrÈe!"){
-		    		AnnonceBas.gagne=true;
+		    	if (this.valeur == "Contr√©e!"){
 		    		passe=0;
-		    		AnnonceGagnante.contre = true;
+		    		AnnonceGagnante.setContre(true);
 		    	}
-		    	else if (this.valeur == "Sur-contreÈ!"){
-		    		AnnonceBas.gagne=true;
+		    	else if (this.valeur == "Sur-contre√©!"){
 		    		passe=0;
-		    		AnnonceGagnante.surcontre = true;
+		    		AnnonceGagnante.setSurContre(true);
 		    	}
 		    	else{
-		    		Humain.DerniereAnnonce = new Annonce("Passe", "", "joueur");
 		    		passe++;
 		    	}
 		    		
 		    }
 		 }
-		
-		public void setGagne(String position){
-			AnnonceBas.gagne=false;
-	    	AnnonceGauche.gagne=false;
-	    	AnnonceHaut.gagne=false;
-	    	AnnonceDroite.gagne=false;
-	    	if (position == "bas")
-	    		AnnonceBas.gagne=true;
-	    	else if (position == "gauche")
-	    		AnnonceGauche.gagne=true;
-	    	else if (position == "haut")
-	    		AnnonceHaut.gagne=true;
-	    	else if (position == "droite")
-	    		AnnonceDroite.gagne=true;
-		}
 			
-		public void Phase_annonces(){
+		public void Phase_annonces(){ //Fonction g√©rant les annonces entre le joueur et les IA
 			passe = 0;
-			int i=premier;  // Sert ‡ gerer qui joue dans quel ordre
+			int i=premier;  // Sert √† gerer qui joue dans quel ordre
 			AnnonceGagnante=new Annonce();
-			annonceSpecial.get(1).setEnabled(false);  // On desactive ContrÈ/SurcontrÈ
+			annonceSpecial.get(1).setEnabled(false);  // On desactive Contr√©/Surcontr√©
 			annonceSpecial.get(2).setEnabled(false);
 			initialiseMainJoueur();  //Place les cartes dans les mains du joueurs et des IA
 			initialiseMainIA();
 			setCartes();
-			while(passe<3 || AnnonceGagnante.valeur == "0"){
+			while(passe<3 || AnnonceGagnante.getValeur() == 0){
 				if (passe==4){   //Si tout le monde passe on redistribue
 					passe=0;
 					AnnonceBas.setText("---");
@@ -660,25 +810,17 @@ public class Fenetre extends JFrame implements ActionListener{
 				}
 				if (i==0)
 					annonceJoueur();
-				else if (i==1){
-					AnnonceChoix(JoueurGauche);
-					pause((int)(500/vitesse));
-				}
-				else if (i==2){
-					AnnonceChoix(JoueurHaut);
-					pause((int)(500/vitesse));
-				}
-				else if (i==3){
-					AnnonceChoix(JoueurDroite);
+				else{
+					Annonce(i);
 					pause((int)(500/vitesse));
 				}
 				i=(i+1)%4;
 			}
-			AnnonceBas.setVisible(AnnonceBas.gagne); //On ne garde visible que les annonces "gagnantes" (annonce la plus ÈlevÈ + Èventuellemnt ContrÈ/SurcontrÈ)
-			AnnonceGauche.setVisible(AnnonceGauche.gagne);
-			AnnonceHaut.setVisible(AnnonceHaut.gagne);
-			AnnonceDroite.setVisible(AnnonceDroite.gagne);
-			annonc.setVisible(false);
+			AnnonceBas.setVisible(false); //On efface les annonces (l'annonce gagnante s'affiche alors en dessous des score)
+			AnnonceGauche.setVisible(false);
+			AnnonceHaut.setVisible(false);
+			AnnonceDroite.setVisible(false);
+			annonc.setVisible(false);  //On efface les boutons d'annonces
 		}
 		
 		public void setCartes(){
@@ -690,768 +832,342 @@ public class Fenetre extends JFrame implements ActionListener{
 				JoueurDroite.Cartes.add(c);
 		}
 		
-		public void AnnonceChoix(Joueur Actuel){
-			Actuel.AnnonceFaite=false;
-			if (AnnonceGagnante.contre==true || AnnonceGagnante.valeur=="CAPOT"){
-				Actuel.DerniereAnnonce= new Annonce("Passe", "", "");
-				Actuel.AnnonceFaite=true;
-				if (Actuel == JoueurGauche) {AnnonceGauche.setText("Passe");passe++;}
-				else if (Actuel == JoueurHaut) {AnnonceHaut.setText("Passe");passe++;}
-				else if (Actuel == JoueurDroite) {AnnonceDroite.setText("Passe");passe++;}
-			}
-			else if (Integer.valueOf(AnnonceGagnante.valeur)>=100) {
-				Actuel.DerniereAnnonce= new Annonce("Passe", "", "");
-				Actuel.AnnonceFaite=true;
-				if (Actuel == JoueurGauche) {AnnonceGauche.setText("Passe");passe++;}
-				else if (Actuel == JoueurHaut) {AnnonceHaut.setText("Passe");passe++;}
-				else if (Actuel == JoueurDroite) {AnnonceDroite.setText("Passe");passe++;}
-			}
-			else if (Actuel == JoueurGauche){
-				if ( JoueurDroite.DerniereAnnonce.valeur == "0" 
-						|| (JoueurDroite.DerniereAnnonce.valeur == "Passe" && JoueurDroite.AlwaysPassed==true)) {
-					AnnonceInit(Actuel.Cartes, Actuel);
+		public void Annonce(int numJoueur){  //Gestion des annonces des IA
+			Annonce temp = AnnoncePrimaire(numJoueur);  //Annonce en fonction des cartes en main
+			Annonce temp2 = AnnonceSecondaire(numJoueur); //Annonce qui r√©pond √† une annonce primaire du partenaire
+			Annonce temp3 = AnnonceTertiaire(numJoueur); //Annonce qui prend en compte la r√©ponse du partenaire
+			Annonce finale = Max(temp, temp2, temp3,numJoueur);  //Meilleure annonce possible
+			if (finale.getValeur()>=160)  // cas du capot
+				finale.setValeur(250);
+			if (numJoueur == 2){
+				if (finale.getValeur() == 0){
+					AnnonceHaut.setText("Passe");
+					passe++;
 				}
-				else {
-					AnnonceSuite(JoueurDroite.DerniereAnnonce, Actuel.Cartes, Actuel);
+				else if (Integer.valueOf(finale.getValeur()) > Integer.valueOf(AnnonceGagnante.getValeur())){
+					//On regarde si on peut monter par rapport √† la meilleure annonce actuelle
+					AnnonceJoueur.add(finale);
+					AnnonceGagnante = finale;
+					AnnonceHaut.setText((finale.getValeur() == 250) ? "Capot" : finale.getValeur() + 
+							" " + finale.getCouleur());
+					passe = 0;
 				}
-			}
-			else if (Actuel == JoueurDroite) {
-				if ( JoueurGauche.DerniereAnnonce.valeur == "0" 
-						|| (JoueurGauche.DerniereAnnonce.valeur == "Passe" && JoueurGauche.AlwaysPassed==true)) {
-					AnnonceInit(Actuel.Cartes, Actuel);
-				}
-				else {
-					AnnonceSuite(JoueurGauche.DerniereAnnonce, Actuel.Cartes, Actuel);
+				else{
+					AnnonceHaut.setText("Passe");
+					passe++;
 				}
 			}
-			else if (Actuel == JoueurHaut) {
-				if ( Humain.DerniereAnnonce.valeur == "0" 
-						|| (Humain.DerniereAnnonce.valeur == "Passe" && JoueurHaut.AlwaysPassed==true)) {
-					AnnonceInit(Actuel.Cartes, Actuel);
+			else{
+				if (numJoueur == 1){
+					if (finale.getValeur() == 0){
+						AnnonceGauche.setText("Passe");
+						passe++;
+					}
+					else if (Integer.valueOf(finale.getValeur()) > 
+							Integer.valueOf(AnnonceGagnante.getValeur())){
+						AnnonceIA.add(finale);
+						AnnonceGagnante = finale;
+						AnnonceGauche.setText((finale.getValeur() == 250) ? "Capot" : 
+							finale.getValeur() + " " + finale.getCouleur());
+						passe = 0;
+					}
+					else{
+						AnnonceGauche.setText("Passe");
+						passe++;
+					}
 				}
-				else {
-					AnnonceSuite(Humain.DerniereAnnonce, Actuel.Cartes, Actuel);
+				else{
+					if (finale.getValeur() == 0){
+						AnnonceDroite.setText("Passe");
+						passe++;
+					}
+					else if (Integer.valueOf(finale.getValeur()) > 
+							Integer.valueOf(AnnonceGagnante.getValeur())){
+						AnnonceIA.add(finale);
+						AnnonceGagnante = finale;
+						AnnonceDroite.setText((finale.getValeur() == 250) ? "Capot" : finale.getValeur() + 
+								" " + finale.getCouleur());
+						passe = 0;
+					}
+					else{
+						AnnonceDroite.setText("Passe");
+						passe++;
+					}
 				}
 			}
-
 		}
 		
-		public void AnnonceInit(List<Carte> Cartes, Joueur Actuel){
-			int MainCoeur = 0;
-			int MainCarreau = 0;
-			int MainTrefle = 0;
-			int MainPique = 0;
-			Carte temp = new Carte("","");
-			
-			for (int i=0 ; i<8 ; i++) {
-				temp = Actuel.Cartes.get(i);
-				
-				if (temp.couleur == "coeur"){  //test main atout coeur
-					if(temp.valeur == "valet"){
-						MainCoeur+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainCoeur+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainCoeur+=500000 ;
-						MainCarreau+=10000000;
-						MainTrefle+=10000000;
-						MainPique+=10000000;}
-					else if(temp.valeur == "10"){
-						MainCoeur+=50000 ;
-						MainCarreau+=1000000;
-						MainTrefle+=1000000;
-						MainPique+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainCoeur+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainCoeur+=500 ;}
-					else if(temp.valeur == "8"){
-						MainCoeur+=5 ;}
-					else if(temp.valeur == "7"){
-						MainCoeur+=5 ;}
-				}
-				else if (temp.couleur == "carreau"){  //test main atout carreau
-					if(temp.valeur == "valet"){
-						MainCarreau+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainCarreau+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainCarreau+=500000 ;
-						MainCoeur+=10000000;
-						MainTrefle+=10000000;
-						MainPique+=10000000;}
-					else if(temp.valeur == "10"){
-						MainCarreau+=50000 ;
-						MainCoeur+=1000000;
-						MainTrefle+=1000000;
-						MainPique+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainCarreau+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainCarreau+=500 ;}
-					else if(temp.valeur == "8"){
-						MainCarreau+=50 ;}
-					else if(temp.valeur == "7"){
-						MainCarreau+=5 ;}
-				}
-				else if (temp.couleur == "trefle"){  //test main atout trefle
-					if(temp.valeur == "valet"){
-						MainTrefle+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainTrefle+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainTrefle+=500000 ;
-						MainCarreau+=10000000;
-						MainCoeur+=10000000;
-						MainPique+=10000000;}
-					else if(temp.valeur == "10"){
-						MainTrefle+=50000 ;
-						MainCarreau+=1000000;
-						MainCoeur+=1000000;
-						MainPique+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainTrefle+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainTrefle+=500 ;}
-					else if(temp.valeur == "8"){
-						MainTrefle+=50 ;}
-					else if(temp.valeur == "7"){
-						MainTrefle+=5 ;}
-				}
-				else if (temp.couleur == "pique"){  //test main atout pique
-					if(temp.valeur == "valet"){
-						MainPique+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainPique+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainPique+=500000 ;
-						MainCarreau+=10000000;
-						MainTrefle+=10000000;
-						MainCoeur+=10000000;}
-					else if(temp.valeur == "10"){
-						MainPique+=50000 ;
-						MainCarreau+=1000000;
-						MainTrefle+=1000000;
-						MainCoeur+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainPique+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainPique+=500 ;}
-					else if(temp.valeur == "8"){
-						MainPique+=50 ;}
-					else if(temp.valeur == "7"){
-						MainPique+=5 ;}
+		public Annonce Max(Annonce a1, Annonce a2, Annonce a3, int numJoueur){
+			Annonce a = new Annonce(0, "", 0, 0);
+			if (a1.getValeur()==250||a2.getValeur()==250||a3.getValeur()==250){
+				return new Annonce(250, a1.getCouleur(), numJoueur, 1);
+			}
+			if (a1.getValeur() != 0){
+				a=a1;
+			}
+			if (a2.getValeur() !=0){
+				if (Integer.valueOf(a2.getValeur())>Integer.valueOf(a.getValeur())){
+					a=a2;
 				}
 			}
-
-			if (MainCoeur<5000000 && MainCarreau<5000000 && MainTrefle<5000000 && MainPique<5000000){ //Test Mauvaise main
-				Actuel.DerniereAnnonce= new Annonce("Passe", "", "");
-				Actuel.AnnonceFaite=true;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("Passe");
-					passe++;
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("Passe");
-					passe++;
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("Passe");
-					passe++;
-					}
-			}
-			
-			else if(Integer.valueOf(AnnonceGagnante.valeur)<80){	//Test 80
-				if ((MainCoeur>5000000 && MainCoeur<9000000)||(MainCoeur>50000000 && MainCoeur<54000000)){	
-				String str = "coeur";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
-				}
-				}	
-			else if ((MainCarreau>5000000 && MainCarreau<9000000)||(MainCarreau>50000000 && MainCarreau<54000000)){						//Test ‡ 80
-				String str = "carreau";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
-					}
-				}	
-			else if ((MainTrefle>5000000 && MainTrefle<9000000)||(MainTrefle>50000000 && MainTrefle<54000000)){						//Test ‡ 80
-				String str = "trefle";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false; 
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
-					}
-				}	
-			else if ((MainPique>5000000 && MainPique<9000000)||(MainPique>50000000 && MainPique<54000000)){						//Test ‡ 80
-				String str = "pique";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-					}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
-					}
+			if (a3.getValeur() !=0){
+				if (Integer.valueOf(a3.getValeur())>Integer.valueOf(a.getValeur())){
+					a=a3;
 				}
 			}
-			
-			else if(Integer.valueOf(AnnonceGagnante.valeur)<90){	//Test 90
-				if (MainCoeur>55000000){  							
-				String str = "coeur";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
-				}	
-			else if (MainCarreau>55000000){
-				String str = "carreau";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
-				}	
-			else if (MainTrefle>55000000){
-				String str = "trefle";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
-				}	
-			else if (MainPique>55000000){
-				String str = "pique";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
-				}
+			if (a.getValeur() == 0)
+				return new Annonce(0, "", 0, 0);
+			else{
+				return a;
 			}
-						
-			else if(Integer.valueOf(AnnonceGagnante.valeur)<100){	//Test 100
-				if (MainCoeur>55500000){						
-				String str = "coeur";
-				Actuel.DerniereAnnonce= new Annonce("100", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("100 " + str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
-					}
-				
-				}	
-			else if (MainCarreau>55500000){
-				String str = "carreau";
-				Actuel.DerniereAnnonce= new Annonce("100", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("100 " + str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
-					}
-				}	
-			else if (MainTrefle>55500000){
-				String str = "Trefle";
-				Actuel.DerniereAnnonce= new Annonce("100", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("100 " + str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
-					}
-				}	
-			else if (MainPique>55500000){
-				String str = "pique";
-				Actuel.DerniereAnnonce= new Annonce("100", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("100 " + str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
-					}
-				}
-			}
-			
-			else if(Actuel.AnnonceFaite=false){
-				Actuel.DerniereAnnonce= new Annonce("Passe", "", "");
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("Passe");
-					passe++;
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("Passe");
-					passe++;
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("Passe");
-					passe++;
-					}
-				
-		}		
 		}
-			
-		public void AnnonceSuite(Annonce AnnonceCoequipier, List<Carte> Cartes, Joueur Actuel){
-			int MainCoeur = 0;
-			int MainCarreau = 0;
-			int MainTrefle = 0;
-			int MainPique = 0;
-			Carte temp = new Carte("","");
-			
-			for (int i=0 ; i<8 ; i++) {
-				temp = Actuel.Cartes.get(i);
-				
-				if (temp.couleur == "coeur"){  //test main atout coeur
-					if(temp.valeur == "valet"){
-						MainCoeur+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainCoeur+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainCoeur+=500000 ;
-						MainCarreau+=10000000;
-						MainTrefle+=10000000;
-						MainPique+=10000000;}
-					else if(temp.valeur == "10"){
-						MainCoeur+=50000 ;
-						MainCarreau+=1000000;
-						MainTrefle+=1000000;
-						MainPique+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainCoeur+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainCoeur+=500 ;}
-					else if(temp.valeur == "8"){
-						MainCoeur+=5 ;}
-					else if(temp.valeur == "7"){
-						MainCoeur+=5 ;}
+		
+		// ----- Annonce Primaire -----
+		
+		public Annonce AnnoncePrimaire(int numJoueur){
+			String[] couleur = {"coeur", "carreau", "pique", "trefle"};
+			Annonce[] annonces = new Annonce[4];
+			Carte[] main = new Carte[8];
+			for (int i = 0; i<8; i++){
+				main[i] = Joueurs[numJoueur][i];
+			}
+			for (int i = 0; i<4; i++){
+				annonces[i] = CalculAnnonce(couleur[i], main, numJoueur);
+			}
+			Annonce finale = MeilleureAnnonce(annonces, numJoueur, main);
+			return finale;
+		}
+		
+		public Annonce CalculAnnonce(String couleur, Carte[] main, int numJoueur){
+			List<Carte> mainAtout = new LinkedList<Carte>();
+			for (int i = 0; i<8; i++){
+				if (main[i].couleur == couleur)
+					mainAtout.add(main[i]);
+			}
+			Boolean cond80 = ((contient(mainAtout, new Carte("valet", couleur)) || 
+					(contient(mainAtout, new Carte("9", couleur))))&& mainAtout.size() >=3);
+			Boolean cond90 = (contient(mainAtout, new Carte("valet", couleur))) && 
+					(contient(mainAtout, new Carte("9", couleur)));
+			int nbAs = CompteAs(main);
+			if (cond80){
+				if(cond90){
+					return new Annonce(90+10*nbAs, couleur, numJoueur, 1);
 				}
-				else if (temp.couleur == "carreau"){  //test main atout carreau
-					if(temp.valeur == "valet"){
-						MainCarreau+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainCarreau+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainCarreau+=500000 ;
-						MainCoeur+=10000000;
-						MainTrefle+=10000000;
-						MainPique+=10000000;}
-					else if(temp.valeur == "10"){
-						MainCarreau+=50000 ;
-						MainCoeur+=1000000;
-						MainTrefle+=1000000;
-						MainPique+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainCarreau+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainCarreau+=500 ;}
-					else if(temp.valeur == "8"){
-						MainCarreau+=50 ;}
-					else if(temp.valeur == "7"){
-						MainCarreau+=5 ;}
-				}
-				else if (temp.couleur == "trefle"){  //test main atout trefle
-					if(temp.valeur == "valet"){
-						MainTrefle+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainTrefle+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainTrefle+=500000 ;
-						MainCarreau+=10000000;
-						MainCoeur+=10000000;
-						MainPique+=10000000;}
-					else if(temp.valeur == "10"){
-						MainTrefle+=50000 ;
-						MainCarreau+=1000000;
-						MainCoeur+=1000000;
-						MainPique+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainTrefle+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainTrefle+=500 ;}
-					else if(temp.valeur == "8"){
-						MainTrefle+=50 ;}
-					else if(temp.valeur == "7"){
-						MainTrefle+=5 ;}
-				}
-				else if (temp.couleur == "pique"){  //test main atout pique
-					if(temp.valeur == "valet"){
-						MainPique+=50000000 ;}
-					else if(temp.valeur == "9"){
-						MainPique+=5000000 ;}
-					else if(temp.valeur == "as"){
-						MainPique+=500000 ;
-						MainCarreau+=10000000;
-						MainTrefle+=10000000;
-						MainCoeur+=10000000;}
-					else if(temp.valeur == "10"){
-						MainPique+=50000 ;
-						MainCarreau+=1000000;
-						MainTrefle+=1000000;
-						MainCoeur+=1000000;}
-					else if(temp.valeur == "roi"){
-						MainPique+=5000 ;}
-					else if(temp.valeur == "dame"){
-						MainPique+=500 ;}
-					else if(temp.valeur == "8"){
-						MainPique+=50 ;}
-					else if(temp.valeur == "7"){
-						MainPique+=5 ;}
+				else
+					return new Annonce(80, couleur, numJoueur, 1);
+			}
+			else
+				return new Annonce(0, "", numJoueur, 1);
+		}
+		
+		public int CompteAs(Carte[] main){
+			int nbAs = 0;
+			for (int i = 0; i<8; i++){
+				if (main[i].valeur == "as"){
+					nbAs++;
 				}
 			}
-
-			
-			if (MainCoeur<5000000 && MainCarreau<5000000 && MainTrefle<5000000 && MainPique<5000000){ //Test Mauvaise main
-				Actuel.DerniereAnnonce= new Annonce("Passe", "", "");
-				Actuel.AnnonceFaite=true;
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("Passe");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("Passe");
-				}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("Passe");
-				}
-			}
-			
-			else if(Integer.valueOf(AnnonceGagnante.valeur)<80){	//Test 80
-				if ((AnnonceCoequipier.couleur=="coeur" && MainCoeur>5000000 && MainCoeur<9000000)||(AnnonceCoequipier.couleur=="coeur" && MainCoeur>50000000 && MainCoeur<54000000)){	
-				String str = "coeur";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
-					}
-				}	
-			else if ((AnnonceCoequipier.couleur=="carreau" && MainCarreau>5000000 && MainCarreau<9000000)||(AnnonceCoequipier.couleur=="carreau" && MainCarreau>50000000 && MainCarreau<54000000)){						//Test ‡ 80
-				String str = "carreau";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
-					}
-				}	
-			else if ((AnnonceCoequipier.couleur=="trefle" && MainTrefle>5000000 && MainTrefle<9000000)||(AnnonceCoequipier.couleur=="trefle" && MainTrefle>50000000 && MainTrefle<54000000)){						//Test ‡ 80
-				String str = "trefle";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
-					}
-				}	
-			else if ((AnnonceCoequipier.couleur=="pique" && MainPique>5000000 && MainPique<9000000)||(AnnonceCoequipier.couleur=="pique" && MainPique>50000000 && MainPique<54000000)){						//Test ‡ 80
-				String str = "pique";
-				Actuel.DerniereAnnonce= new Annonce("80", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("80 " + str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurGauche");
-					}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("80 "+ str);
-					AnnonceGagnante = new Annonce("80", str, "JoueurDroite");
+			return nbAs;
+		}
+		
+		public Annonce MeilleureAnnonce(Annonce[] annonces, int numJoueur, Carte[] main){
+			int valeurMax = 0;
+			for (Annonce a : annonces){
+				if (a.getValeur() == 250)
+					return a;
+				else if (a.getValeur() != 0){
+					if (Integer.valueOf(a.getValeur()) > valeurMax){
+						valeurMax = a.getValeur();
 					}
 				}
 			}
-			
-			else if(Integer.valueOf(AnnonceGagnante.valeur)<90){	//Test 90
-				if (AnnonceCoequipier.couleur=="coeur" && MainCoeur>55000000){  							
-				String str = "coeur";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
-				}	
-			else if (AnnonceCoequipier.couleur=="carreau" && MainCarreau>55000000){
-				String str = "carreau";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
-				}	
-			else if (AnnonceCoequipier.couleur=="trefle" && MainTrefle>55000000){
-				String str = "trefle";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
-				}	
-			else if (AnnonceCoequipier.couleur=="pique" && MainPique>55000000){
-				String str = "pique";
-				Actuel.DerniereAnnonce= new Annonce("90", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("90 " + str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("90 "+ str);
-					AnnonceGagnante = new Annonce("90", str, "JoueurDroite");
-					}
+			if (valeurMax == 0){
+				return new Annonce(0, "", numJoueur, 1);
+			}
+			List<Annonce> annoncesMax = new LinkedList<Annonce>();
+			List<Annonce> annoncesMax2 = new LinkedList<Annonce>();
+			for (Annonce a : annonces){
+				if (a.getValeur() == valeurMax){
+					annoncesMax.add(a);
 				}
 			}
-			
-			else if(Integer.valueOf(AnnonceGagnante.valeur)<100){	//Test 100
-				if (AnnonceCoequipier.couleur=="coeur" && MainCoeur>55500000){						
-					String str = "coeur";
-					Actuel.DerniereAnnonce= new Annonce("100", str, "");
-					Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-					if (Actuel==JoueurGauche) {							
-						AnnonceGauche.setText("100 " + str);
-						AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
+			if (annoncesMax.size() == 1){
+				return annoncesMax.get(0);
+			}
+			else{
+				int size = annoncesMax.size();
+				for (int i = 0; i<size; i++){
+					if(contient(main, new Carte("valet", annoncesMax.get(i).getCouleur()))){
+						annoncesMax2.add(annoncesMax.get(i));
 					}
-					else if (Actuel==JoueurHaut) {
-						AnnonceHaut.setText("100 "+ str);
-						AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
+				}
+				if (annoncesMax2.size()==1)
+					return annoncesMax2.get(0);
+				else{
+					if (annoncesMax2.size() != 0){
+						if(contient(main, new Carte("as", annoncesMax2.get(0).getCouleur()))){
+							return annoncesMax2.get(1);
 						}
-					else if (Actuel==JoueurDroite) {
-						AnnonceDroite.setText("100 "+ str);
-						AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
+						else{
+							return annoncesMax2.get(0);
 						}
 					}	
-				else if (AnnonceCoequipier.couleur=="carreau" && MainCarreau>55500000){
-				String str = "carreau";
-				Actuel.DerniereAnnonce= new Annonce("100", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("100 " + str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
-					}
-				}	
-			else if (AnnonceCoequipier.couleur=="trefle" && MainTrefle>55500000){
-				String str = "Trefle";
-				Actuel.DerniereAnnonce= new Annonce("100", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("100 " + str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
-					}
-				}	
-			else if (AnnonceCoequipier.couleur=="pique" && MainPique>55500000){
-				String str = "pique";
-				Actuel.DerniereAnnonce= new Annonce("100", str, "");
-				Actuel.AnnonceFaite=true; Actuel.AlwaysPassed=false;
-				if (Actuel==JoueurGauche) {							
-					AnnonceGauche.setText("100 " + str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurGauche");
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurHaut");
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("100 "+ str);
-					AnnonceGagnante = new Annonce("100", str, "JoueurDroite");
+					else{
+						if(contient(main, new Carte("as", annoncesMax.get(0).getCouleur()))){
+							return annoncesMax.get(1);
+						}
+						else{
+							return annoncesMax.get(0);
+						}
 					}
 				}
-			}	
-						
-			else if(Actuel.AnnonceFaite=false){
-				Actuel.DerniereAnnonce= new Annonce("Passe", "", "");
-				if (Actuel==JoueurGauche) {
-					AnnonceGauche.setText("Passe");
-					passe++;
-				}
-				else if (Actuel==JoueurHaut) {
-					AnnonceHaut.setText("Passe");
-					passe++;
-					}
-				else if (Actuel==JoueurDroite) {
-					AnnonceDroite.setText("Passe");
-					passe++;
-					}
-			}		
+			}
 		}
-			
-				
 		
+		// ----- Annonce Secondaire -----
+		
+		public Annonce AnnonceSecondaire(int numJoueur){
+			Carte[] main = new Carte[8];
+			for (int i = 0; i<8; i++){
+				main[i] = Joueurs[numJoueur][i];
+			}
+			if (numJoueur == 2){
+				if (AnnonceJoueur.size() == 0){
+					return new Annonce(0, "", 0, 0);
+				}
+				else if ((AnnonceJoueur.get(AnnonceJoueur.size()-1).getJoueur() != numJoueur )
+						&& (AnnonceJoueur.get(AnnonceJoueur.size()-1).getNumero() == 1)){
+							return Ajout(AnnonceJoueur.get(AnnonceJoueur.size()-1), main, numJoueur);
+						}
+				else{
+					return new Annonce(0, "", 0, 0);
+				}
+			}
+			else{
+				if (AnnonceIA.size() == 0){
+					return new Annonce(0, "", 0, 0);
+				}
+				else if ((AnnonceIA.get(AnnonceIA.size()-1).getJoueur() != 2 )
+						&& (AnnonceIA.get(AnnonceIA.size()-1).getNumero() == 1)){
+							return Ajout(AnnonceIA.get(AnnonceIA.size()-1), main, numJoueur);
+						}
+				else{
+					return new Annonce(0, "", 0, 0);
+				}
+			}
+		}
+		
+		public Annonce Ajout(Annonce primaire, Carte[] main, int numJoueur){
+			Boolean complementaire = false;
+			int ajout = 0;
+			List<Carte> mainAtout = new LinkedList<Carte>();
+			for (int i = 0; i<8; i++){
+				if (main[i].couleur == primaire.getCouleur())
+					mainAtout.add(main[i]);
+			}
+			if (contient(main, new Carte("valet", primaire.getCouleur())) 
+					|| (contient(main, new Carte("9", primaire.getCouleur())) && mainAtout.size()>=2)){
+				complementaire = true;
+			}
+			int nbAs = 0;
+			for (Carte c : main){
+				if (c.valeur == "as" && c.couleur!=primaire.getCouleur()){
+					nbAs++;
+				}
+			}
+			if (complementaire){
+				ajout+=20+10*nbAs;
+			}
+			else if(Integer.valueOf(primaire.getValeur())>=90){
+				ajout+=10*nbAs;
+			}
+			else{
+				ajout+=(nbAs>=1) ? 10 : 0;
+			}
+			return new Annonce(AnnonceGagnante.getValeur() + 
+					ajout, primaire.getCouleur(), numJoueur, 2, ajout);
+		}
+		
+		// ----- Annonce Tertiaire -----
+		
+		public Annonce AnnonceTertiaire(int numJoueur){
+			Carte[] main = new Carte[8];
+			for (int i = 0; i<8; i++){
+				main[i] = Joueurs[numJoueur][i];
+			}
+			if (numJoueur == 2){
+				if (AnnonceJoueur.size() == 0){
+					return new Annonce(0, "", 0, 0);
+				}
+				else if ((AnnonceJoueur.get(AnnonceJoueur.size()-1).getJoueur() != numJoueur )
+						&& (AnnonceJoueur.get(AnnonceJoueur.size()-1).getNumero() == 1)){
+							return Annonce3(AnnonceJoueur.get(AnnonceJoueur.size()-1), main, numJoueur);
+						}
+				else{
+					return new Annonce(0, "", 0, 0);
+				}
+			}
+			else{
+				if (AnnonceIA.size() == 0){
+					return new Annonce(0, "", 0, 0);
+				}
+				else if ((AnnonceIA.get(AnnonceIA.size()-1).getJoueur() != 2 )
+						&& (AnnonceIA.get(AnnonceIA.size()-1).getNumero() == 1)){
+							return Ajout(AnnonceIA.get(AnnonceIA.size()-1), main, numJoueur);
+						}
+				else{
+					return new Annonce(0, "", 0, 0);
+				}
+			}
+		}
+		
+		public Annonce Annonce3(Annonce derniere, Carte[] main, int numJoueur){
+			Boolean maitrise = false;
+			Annonce primaire;
+			if (AnnonceJoueur.size()<=1){
+				return new Annonce(0, "", 0, 0);
+			}
+			else{
+				if (numJoueur == 2){
+					primaire = AnnonceJoueur.get(AnnonceJoueur.size()-2);
+				}
+				else{
+					primaire = AnnonceIA.get(AnnonceIA.size()-2);
+				}
+				if (Integer.valueOf(primaire.getValeur()) >= 90){
+					maitrise = true;
+				}
+				else if(derniere.getAjout()>10){
+					maitrise = true;
+				}
+				if (maitrise){
+					int nbPli = 0;
+					for (int i = 0; i<8; i++){
+						if (main[i].couleur == derniere.getCouleur()){
+							nbPli+=1;
+						}
+						String[] couleur = {"coeur", "carreau", "pique", "trefle"};
+						for (String c : couleur){
+							if (c != derniere.getCouleur()){
+								int rang = 0;
+								while (contient(main, new Carte(OrdreCartesNonAtout[rang], c))){
+									nbPli++;
+									rang++;
+								}
+							}
+						}
+					}
+					if (nbPli == 8)
+						return new Annonce(250, derniere.getCouleur(), numJoueur, 3);
+					else
+						return new Annonce(20*nbPli, derniere.getCouleur(), numJoueur, 3);
+				}
+				else
+					return new Annonce(0, "", 0, 0);
+			}
+		}
 				
-		public void initialiseAnnonces(){ //Initialise tous les boutons d'annonces (fonction encore un peu brouillone)
+		public void initialiseAnnonces(){ //Initialise tous les boutons d'annonces
 			
 			JPanel centre = new JPanel();
 			GridLayout grille = new GridLayout(4,12,5,5);
@@ -1462,49 +1178,49 @@ public class Fenetre extends JFrame implements ActionListener{
 			// ----Coeur-----
 			for (int i = 0; i<11; i++){
 				annonceCoeur.add(new BoutonAnnonces(Integer.toString(80+10*i), "coeur"));
-				annonceCoeur.get(i).addActionListener(new classique(Integer.toString(80+i*10), "coeur"));
+				annonceCoeur.get(i).addActionListener(new classique(80+i*10, "coeur"));
 				centre.add(annonceCoeur.get(i));
 			}
 			BoutonAnnonces coeurCAPOT = new BoutonAnnonces("CAPOT", "coeur");
 			coeurCAPOT.setFont(police);
 			centre.add(coeurCAPOT);
-			coeurCAPOT.addActionListener(new classique("CAPOT", "coeur"));
+			coeurCAPOT.addActionListener(new classique(250, "coeur"));
 			annonceCoeur.add(coeurCAPOT);
 			
 			// ----Pique-----
 			for (int i = 0; i<11; i++){
 				annoncePique.add(new BoutonAnnonces(Integer.toString(80+10*i), "pique"));
-				annoncePique.get(i).addActionListener(new classique(Integer.toString(80+i*10), "pique"));
+				annoncePique.get(i).addActionListener(new classique(80+i*10, "pique"));
 				centre.add(annoncePique.get(i));
 			}
 			BoutonAnnonces piqueCAPOT = new BoutonAnnonces("CAPOT", "pique");
 			piqueCAPOT.setFont(police);
 			centre.add(piqueCAPOT);
-			piqueCAPOT.addActionListener(new classique("CAPOT", "pique"));
+			piqueCAPOT.addActionListener(new classique(250, "pique"));
 			annoncePique.add(piqueCAPOT);
 			
 			// ----Carreau-----
 			for (int i = 0; i<11; i++){
 				annonceCarreau.add(new BoutonAnnonces(Integer.toString(80+10*i), "carreau"));
-				annonceCarreau.get(i).addActionListener(new classique(Integer.toString(80+i*10), "carreau"));
+				annonceCarreau.get(i).addActionListener(new classique(80+i*10, "carreau"));
 				centre.add(annonceCarreau.get(i));
 			}
 			BoutonAnnonces carreauCAPOT = new BoutonAnnonces("CAPOT", "carreau");
 			carreauCAPOT.setFont(police);
 			centre.add(carreauCAPOT);
-			carreauCAPOT.addActionListener(new classique("CAPOT", "carreau"));
+			carreauCAPOT.addActionListener(new classique(250, "carreau"));
 			annonceCarreau.add(carreauCAPOT);
 			
 			// ----Trefle-----
 			for (int i = 0; i<11; i++){
 				annonceTrefle.add(new BoutonAnnonces(Integer.toString(80+10*i), "trefle"));
-				annonceTrefle.get(i).addActionListener(new classique(Integer.toString(80+i*10), "trefle"));
+				annonceTrefle.get(i).addActionListener(new classique(80+i*10, "trefle"));
 				centre.add(annonceTrefle.get(i));
 			}
 			BoutonAnnonces trefleCAPOT = new BoutonAnnonces("CAPOT", "trefle");
 			trefleCAPOT.setFont(police);
 			centre.add(trefleCAPOT);
-			trefleCAPOT.addActionListener(new classique("CAPOT", "trefle"));
+			trefleCAPOT.addActionListener(new classique(250, "trefle"));
 			annonceTrefle.add(trefleCAPOT);
 
 			Font police2 = new Font("Tahoma", Font.BOLD, 30); //Font pour les annonces speciales
@@ -1512,9 +1228,9 @@ public class Fenetre extends JFrame implements ActionListener{
 			// ----Autres-----
 			JPanel special = new JPanel();
 			special.setLayout(new GridLayout(1,3,5,5));
-			JButton passe = new JButton("PASSE");
-			JButton Contre = new JButton("ContrÈe!");
-			JButton Surcontre = new JButton("Sur-ContrÈe!");
+			JButton passe = new JButton("Passe");
+			JButton Contre = new JButton("Contr√©e !");
+			JButton Surcontre = new JButton("Surcontr√©e !");
 			passe.setPreferredSize(new Dimension(100,100));
 			Contre.setPreferredSize(new Dimension(100,100));
 			Surcontre.setPreferredSize(new Dimension(100,100));
@@ -1529,8 +1245,8 @@ public class Fenetre extends JFrame implements ActionListener{
 			special.add(Contre);
 			special.add(Surcontre);
 			passe.addActionListener(new special("Passe"));
-			Contre.addActionListener(new special("ContrÈe!"));
-			Surcontre.addActionListener(new special("Sur-contreÈ!"));
+			Contre.addActionListener(new special("Contr√©e!"));
+			Surcontre.addActionListener(new special("Sur-contre√©!"));
 			
 			centre.setOpaque(false);
 			special.setOpaque(false);
@@ -1548,7 +1264,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			
 			container.add(annonc, BorderLayout.CENTER);
 			
-			for (int i = 0; i<12; i++){          //On dÈsactive tous les boutons      
+			for (int i = 0; i<12; i++){          //On d√©sactive tous les boutons      
 				annonceCoeur.get(i).setEnabled(false);
 				annoncePique.get(i).setEnabled(false);
 				annonceCarreau.get(i).setEnabled(false);
@@ -1571,12 +1287,12 @@ public class Fenetre extends JFrame implements ActionListener{
 			annonc.getComponent(0).setVisible(true);
 			JPanel temp = (JPanel)annonc.getComponent(1);
 			temp.getComponent(0).setVisible(true);
-			if (!AnnonceGagnante.contre){        // On active les boutons
+			if (!AnnonceGagnante.getContre()){        // On active les boutons
 				int j;
-				if (AnnonceGagnante.valeur == "0")
+				if (AnnonceGagnante.getValeur() == 0)
 					j=0;
 				else
-					j = (Integer.valueOf(AnnonceGagnante.valeur) - 80)/10+1;
+					j = (AnnonceGagnante.getValeur() - 80)/10+1;
 				for (int i = j; i<12; i++){              
 					annonceCoeur.get(i).setEnabled(true);
 					annoncePique.get(i).setEnabled(true);
@@ -1587,25 +1303,31 @@ public class Fenetre extends JFrame implements ActionListener{
 			annonceSpecial.get(0).setEnabled(true);
 			annonceSpecial.get(1).setEnabled(true);
 			annonceSpecial.get(2).setEnabled(true);
-			if (AnnonceGagnante.joueur == "joueur" || AnnonceGagnante.contre || AnnonceGagnante.valeur == "0")
+			if ((AnnonceGagnante.getJoueur() == 0 || AnnonceGagnante.getJoueur() == 2) || 
+					AnnonceGagnante.getContre() || AnnonceGagnante.getValeur() == 0)
 				annonceSpecial.get(1).setEnabled(false);
-			if (AnnonceGagnante.joueur == "IA" || !AnnonceGagnante.contre || AnnonceGagnante.surcontre)
+			if ((AnnonceGagnante.getJoueur() == 1 || AnnonceGagnante.getJoueur() == 3) || 
+					!AnnonceGagnante.getContre() || AnnonceGagnante.getSurContre())
 				annonceSpecial.get(2).setEnabled(false);
+			
 			while(ecouteAnnonce){  // On attend l'appui sur un bouton
 				pause(10);
 			}
-			for (int i = 0; i<12; i++){   // On dÈsactive les boutons
+			
+			for (int i = 0; i<12; i++){   // On d√©sactive les boutons
 				annonceCoeur.get(i).setEnabled(false);
 				annoncePique.get(i).setEnabled(false);
 				annonceCarreau.get(i).setEnabled(false);
 				annonceTrefle.get(i).setEnabled(false);
 			}
 			annonceSpecial.get(0).setEnabled(false);
-			if (AnnonceGagnante.joueur == "joueur" || AnnonceGagnante.valeur == "0" || AnnonceGagnante.contre)
+			if ((AnnonceGagnante.getJoueur() == 0 || AnnonceGagnante.getJoueur() == 2) || 
+					AnnonceGagnante.getValeur() == 0 || AnnonceGagnante.getContre())
 				annonceSpecial.get(1).setEnabled(false);
 			else
 				annonceSpecial.get(1).setEnabled(true);
-			if (AnnonceGagnante.joueur == "IA" || !AnnonceGagnante.contre || AnnonceGagnante.surcontre)
+			if ((AnnonceGagnante.getJoueur() == 1 || AnnonceGagnante.getJoueur() == 3) || 
+					!AnnonceGagnante.getContre() || AnnonceGagnante.getSurContre())
 				annonceSpecial.get(2).setEnabled(false);
 			else
 				annonceSpecial.get(2).setEnabled(true);
@@ -1614,65 +1336,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			pause((int)(500/vitesse));
 		}
 		
-		public void annonceGauche(){ 
-			if (AnnonceGagnante.valeur == "CAPOT"){
-				AnnonceGauche.setText("Passe");
-				AnnonceGauche.gagne = true;
-				passe++;
-			}
-			else if (Integer.valueOf(AnnonceGagnante.valeur)<80){
-				AnnonceGauche.setText("80 coeur");
-				AnnonceGagnante = new Annonce ("80", "coeur", "IA");
-				passe=0;
-			}
-			else{
-				AnnonceGauche.setText("Passe");
-				passe++;
-			}
-			if (AnnonceGagnante.joueur == "joueur" || AnnonceGagnante.contre)
-				annonceSpecial.get(1).setEnabled(false);
-			else
-				annonceSpecial.get(1).setEnabled(true);
-			if (AnnonceGagnante.joueur == "IA" || !AnnonceGagnante.contre || AnnonceGagnante.surcontre)
-				annonceSpecial.get(2).setEnabled(false);
-			else
-				annonceSpecial.get(2).setEnabled(true);
-			pause((int)(500/vitesse));
-		}
-		
-		public void annonceHaut(){
-			AnnonceHaut.setText("Passe");
-			passe++;
-			pause((int)(500/vitesse));
-		}
-		
-		public void annonceDroite(){
-			if (AnnonceGagnante.valeur == "CAPOT" || AnnonceGagnante.contre){
-				AnnonceDroite.setText("Passe");
-				passe++;
-			}
-			else if (Integer.valueOf(AnnonceGagnante.valeur)<100){
-				AnnonceDroite.setText("100 coeur");
-				AnnonceDroite.gagne = true;
-				AnnonceGagnante = new Annonce ("100", "coeur", "IA");
-				passe=0;
-			}
-			else{
-				AnnonceDroite.setText("Passe");
-				passe++;
-			}
-			if (AnnonceGagnante.joueur == "joueur" || AnnonceGagnante.contre)  //Actualisation des boutons contrÈ/surcontrÈ
-				annonceSpecial.get(1).setEnabled(false);
-			else
-				annonceSpecial.get(1).setEnabled(true);
-			if (AnnonceGagnante.joueur == "IA" || !AnnonceGagnante.contre || AnnonceGagnante.surcontre)
-				annonceSpecial.get(2).setEnabled(false);
-			else
-				annonceSpecial.get(2).setEnabled(true);
-			pause((int)(500/vitesse));
-		}
-		
-		public void initialise(){
+		public void initialise(){  //Cr√©ation de toutes les cartes
 			Liste_Cartes.add(new Carte("7", "coeur"));
 			Liste_Cartes.add(new Carte("8", "coeur"));
 			Liste_Cartes.add(new Carte("9", "coeur"));
@@ -1752,11 +1416,10 @@ public class Fenetre extends JFrame implements ActionListener{
 			for (int i = 0; i < provisoire2.size() ; i++){
 				Liste_Cartes.add(provisoire2.get(i));
 			}
-			
 		}
 		
 		public int value(Carte test){
-			Atout = AnnonceGagnante.couleur;
+			Atout = AnnonceGagnante.getCouleur();
 			if (test.valeur == "as" )
 				return 11 ;
 			if (test.valeur == "roi")
@@ -1774,9 +1437,9 @@ public class Fenetre extends JFrame implements ActionListener{
 			return 0 ;
 		}
 		
-		public void trier(){  //Fonctionne sur la base du tri rapide aussi appelÈ tri ‡ bulles
+		public void trier(){  //Fonctionne sur la base du tri rapide aussi appel√© tri √† bulles
 			for (int i = 0; i<4; i++){
-				boolean trie  =false; //indique si les cartes sont triÈes
+				boolean trie  =false; //indique si les cartes sont tri√©es
 				while (!trie){
 					trie = true;
 					for (int j = 0; j<7; j++){
@@ -1791,7 +1454,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			}
 		}
 		
-		public void initialiseMainJoueur(){
+		public void initialiseMainJoueur(){ //place les cartes dans la main du joueur
 			
 			for (int i = 0; i<Boutons.size(); i++){
 				bas.remove(1);
@@ -1812,9 +1475,9 @@ public class Fenetre extends JFrame implements ActionListener{
 				bas.repaint();
 		}
 		
-		public void initialiseMainIA(){
-			
-			for (int i = 0; i<IAgauche.Cartes.size(); i++){  //On supprime tous les boutons liÈs aux cartes de la partie prÈcÈdente
+		public void initialiseMainIA(){ //place les cartes dans les mains des IA
+			//On supprime tous les boutons li√©s aux cartes de la partie pr√©c√©dente
+			for (int i = 0; i<IAgauche.Cartes.size(); i++){  
 				haut.remove(1);
 				gauche.remove(1);
 				droite.remove(1);
@@ -1853,7 +1516,7 @@ public class Fenetre extends JFrame implements ActionListener{
 		}
 		
 		public void setCartesJouables(){  //On interdit l'appui sur les cartes interdites
-			for (Bouton b : Boutons)  //On rÈ-autorise tout dans un premier temps
+			for (Bouton b : Boutons)  //On r√©-autorise tout dans un premier temps
 				b.setEnabled(true);
 			List<Carte> cartesJouables = new LinkedList<Carte>();
 			for (Carte EnMain : Joueurs[0])
@@ -1870,14 +1533,17 @@ public class Fenetre extends JFrame implements ActionListener{
 					}
 					if (jaiDeLAtout){  //Si le joueur n'as pas d'atout il joue ce qu'il veut
 						Carte PlusForte = CartesPlateau.get(0); //Meilleur atout en jeu
-						for (Carte plat : CartesPlateau)   //On dÈtermine le meilleur atout
+						for (Carte plat : CartesPlateau)   //On d√©termine le meilleur atout
 							if (plat.RangAtout < PlusForte.RangAtout && plat.couleur == Atout)
 								PlusForte = plat;
 						for (Carte EnMain : cartesJouables)
-							if (EnMain.couleur == Atout && (EnMain.RangAtout < PlusForte.RangAtout)) //Peut-on monter ‡ l'atout ?
+							//Peut-on monter √† l'atout ?
+							if (EnMain.couleur == Atout && (EnMain.RangAtout < PlusForte.RangAtout)) 
 								jePeuxJouer = true;
-						for (int i = 0; i<cartesJouables.size(); i++){  //On dÈsactive (enfin) les boutons des cartes interdites
-							if (cartesJouables.get(i).couleur != Atout || (jePeuxJouer && cartesJouables.get(i).RangAtout > actuelle.RangAtout)){
+						//On d√©sactive (enfin) les boutons des cartes interdites
+						for (int i = 0; i<cartesJouables.size(); i++){  
+							if (cartesJouables.get(i).couleur != Atout || 
+									(jePeuxJouer && cartesJouables.get(i).RangAtout > actuelle.RangAtout)){
 								Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 							}
 						}
@@ -1890,7 +1556,8 @@ public class Fenetre extends JFrame implements ActionListener{
 							jaiLaCouleur = true;
 					}
 					if (jaiLaCouleur){
-						for (int i = 0; i<cartesJouables.size(); i++){  //On dÈsactive les boutons des cartes interdites
+						//On d√©sactive les boutons des cartes interdites
+						for (int i = 0; i<cartesJouables.size(); i++){  
 							if (cartesJouables.get(i).couleur != actuelle.couleur){
 								Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 							}
@@ -1905,11 +1572,12 @@ public class Fenetre extends JFrame implements ActionListener{
 						if (jaiDeLAtout){  //Si le joueur n'as pas d'atout il joue ce qu'il veut
 							Carte PlusForte = new Carte("temp", "temp"); //Meilleur atout en jeu
 							PlusForte.RangAtout = 50;
-							for (Carte plat : CartesPlateau)   //On dÈtermine le meilleur atout
+							for (Carte plat : CartesPlateau)   //On d√©termine le meilleur atout
 								if (plat.RangAtout < PlusForte.RangAtout && plat.couleur == Atout)
 									PlusForte = plat;
 							if (PlusForte.RangAtout == 50){
-								for (int i = 0; i<cartesJouables.size(); i++){  //On dÈsactive les boutons des cartes interdites
+								//On d√©sactive les boutons des cartes interdites
+								for (int i = 0; i<cartesJouables.size(); i++){  
 									if (cartesJouables.get(i).couleur != Atout){
 										Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 									}
@@ -1917,10 +1585,13 @@ public class Fenetre extends JFrame implements ActionListener{
 							}
 							else{
 								for (Carte EnMain : cartesJouables)
-									if (EnMain.couleur == Atout && (EnMain.RangAtout < PlusForte.RangAtout)) //Peut-on monter ‡ l'atout ?
+									//Peut-on monter √† l'atout ?
+									if (EnMain.couleur == Atout && (EnMain.RangAtout < PlusForte.RangAtout)) 
 										jePeuxJouer = true;
-								for (int i = 0; i<cartesJouables.size(); i++){  //On dÈsactive (enfin) les boutons des cartes interdites
-									if (Joueurs[0][i].couleur != Atout || (jePeuxJouer && Joueurs[0][i].RangAtout > actuelle.RangAtout)){
+								//On d√©sactive (enfin) les boutons des cartes interdites
+								for (int i = 0; i<cartesJouables.size(); i++){  
+									if (Joueurs[0][i].couleur != Atout || 
+											(jePeuxJouer && Joueurs[0][i].RangAtout > actuelle.RangAtout)){
 										Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 									}
 								}
@@ -1931,7 +1602,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			}
 		}
 		
-		public int checkGagnant(){ // Renvoie num gagnat pli
+		public int checkGagnant(){ // Renvoie le numero du gagnant du pli
 			boolean atout = false;
 			int gagnante = 0;
 			String couleurDemandee = CartesPlateau.get(0).couleur;
@@ -1946,7 +1617,8 @@ public class Fenetre extends JFrame implements ActionListener{
 				}
 				else{  //Pas d'atout sur le plateau
 					if (CartesPlateau.get(i).couleur == couleurDemandee &&
-							CartesPlateau.get(i).RangNonAtout < CartesPlateau.get(gagnante).RangNonAtout)
+							CartesPlateau.get(i).RangNonAtout < CartesPlateau.get(gagnante).RangNonAtout
+							&& !atout)
 						gagnante = i;
 				}
 					
@@ -1954,10 +1626,10 @@ public class Fenetre extends JFrame implements ActionListener{
 			return gagnante;
 		}
 		
-		public int CarteToIndice(Carte Carte, int NumJoueur){
+		public int CarteToIndice(Carte Carte, int NumJoueur){ // Nous donne l'indice d'une carte dans une certaine main d'un joueur
 			int indice = 0 ;
 			for (int i =0 ; i < 8 ; i++){
-				if (Joueurs[NumJoueur][i].isequal(Carte)){  //Paul : j'ai remplacÈ ton == par isequal
+				if (Joueurs[NumJoueur][i].isequal(Carte)){
 					indice = i;
 				}
 			}
@@ -1965,29 +1637,36 @@ public class Fenetre extends JFrame implements ActionListener{
 		}
 		
 		public void play_IA(int q){  
-			List<Carte> CartesJouables = new LinkedList<Carte>();  // Parmis les cartes en main, les cartes que l'on peu jouer dans les rËgles
-			int choix = -1;											// Indice de la carte que l'on va jouer
-			Carte CarteBientotJouee = new Carte("ProblemeValeur","ProblemeCouleur");  // Carte que l'on va bientot jouer 
-			if (CartesPlateau.size() != 0){							// Est-on le premier ‡ jouer?
-				String CouleurDemandee = CartesPlateau.get(0).couleur;	// Couleur demandÈe du pli
+			// Parmis les cartes en main, les cartes que l'on peu jouer dans les r√®gles
+			List<Carte> CartesJouables = new LinkedList<Carte>();  
+			int choix = -1;	// Indice de la carte que l'on va jouer						
+			// Carte que l'on va bientot jouer 
+			Carte CarteBientotJouee = new Carte("ProblemeValeur","ProblemeCouleur");  
+			if (CartesPlateau.size() != 0){							// Est-on le premier √† jouer?
+				String CouleurDemandee = CartesPlateau.get(0).couleur;	// Couleur demand√©e du pli
 				if (CouleurDemandee == Atout){
-					for (int k = 0 ; k < 8 ; k++){		// Si atout demandÈ, les cartes jouables sont les cartes d'atout meilleures que la meilleure carte atout  jouÈe 
-						if (Joueurs[q][k].couleur == CouleurDemandee && Joueurs[q][k].RangAtout < RangAtoutMaitre && Joueurs[q][k].jouee == false){
+					for (int k = 0 ; k < 8 ; k++){		
+						/* Si atout demand√©, les cartes jouables sont les cartes 
+						 * d'atout meilleures que la meilleure carte atout  jou√©e */
+						if (Joueurs[q][k].couleur == CouleurDemandee && 
+								Joueurs[q][k].RangAtout < RangAtoutMaitre && Joueurs[q][k].jouee == false){
 							CartesJouables.add(Joueurs[q][k]);
 						}
 					}
-
-					if (CartesJouables.size() !=0) {	// Si on peut monter ‡ l'atout et que l'on a la carte maitre ‡ l'atout
+					// Si on peut monter √† l'atout et que l'on a la carte maitre √† l'atout
+					if (CartesJouables.size() !=0) {	
 						for (Carte Carte : CartesJouables){
 							if (CarteAtoutMaitre.isequal(Carte)){
 								choix = CarteToIndice(Carte,q);
 							}
 							
 						}
-						if (choix == -1){			// Si on peut monter mais que l'on n'a pas la carte maitre ‡ l'atout
+						// Si on peut monter mais que l'on n'a pas la carte maitre √† l'atout
+						if (choix == -1){			
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangAtout > CartesJouables.get(IndiceJouable).RangAtout) {
+								if (CartesJouables.get(i).RangAtout > 
+										CartesJouables.get(IndiceJouable).RangAtout){
 									IndiceJouable = i ;
 								}
 									
@@ -1995,17 +1674,17 @@ public class Fenetre extends JFrame implements ActionListener{
 							choix = CarteToIndice(CartesJouables.get(IndiceJouable),q) ;
 						}
 					}
-					else {						// Si on ne peut pas monter ‡ l'atout, on joue le plus petit 
+					else {	// Si on ne peut pas monter √† l'atout, on joue le plus petit 
 						for (int k = 0 ; k < 8 ; k++){
 							if (Joueurs[q][k].couleur == CouleurDemandee && Joueurs[q][k].jouee == false){
 								CartesJouables.add(Joueurs[q][k]);
 							}
 						}
-						
-						if (CartesJouables.size() !=0) { // Si on a de l'atout mais que l'on ne peut pas monter, on joue le plus petit
+						// Si on a de l'atout mais que l'on ne peut pas monter, on joue le plus petit
+						if (CartesJouables.size() !=0) { 
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangAtout > CartesJouables.get(IndiceJouable).RangAtout) {
+								if (CartesJouables.get(i).RangAtout > CartesJouables.get(IndiceJouable).RangAtout){
 									IndiceJouable = i ;
 								}
 								
@@ -2031,13 +1710,13 @@ public class Fenetre extends JFrame implements ActionListener{
 						
 					}
 				}
-				else {								// Non Atout demandÈ 
-					for (int k = 0 ; k < 8 ; k++){	// Cartes jouables sont les cartes de la couleur demandÈe
+				else {								// Non Atout demand√© 
+					for (int k = 0 ; k < 8 ; k++){	// Cartes jouables sont les cartes de la couleur demand√©e
 						if (Joueurs[q][k].couleur == CouleurDemandee && Joueurs[q][k].jouee == false){
 							CartesJouables.add(Joueurs[q][k]);
 						}
 					}
-					if (CartesJouables.size() != 0) {
+					if (CartesJouables.size() != 0) { // On pose la carte maittre si on l'atout
 						for (Carte carte : CartesMaitres){
 							if (contient(CartesJouables, carte)){
 								CarteBientotJouee = carte;
@@ -2046,10 +1725,11 @@ public class Fenetre extends JFrame implements ActionListener{
 						if (CarteBientotJouee.valeur != "ProblemeValeur"){
 							choix = CarteToIndice(CarteBientotJouee,q);
 						}
-						else {
+						else {						// On met la carte la ple faible de la couleur demand√©e
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangNonAtout > CartesJouables.get(IndiceJouable).RangNonAtout) {
+								if (CartesJouables.get(i).RangNonAtout > 
+										CartesJouables.get(IndiceJouable).RangNonAtout) {
 									IndiceJouable = i ;
 								}
 							}
@@ -2057,23 +1737,28 @@ public class Fenetre extends JFrame implements ActionListener{
 							choix = CarteToIndice(CarteBientotJouee,q);
 						}
 					}
-					else{
+					/* Si on n's pas de la couleur demande, on doit couper, avec un atout 
+					 * plus grag que tous les atouts dans le pli
+					 */
+					else{						
 						for (int k = 0 ; k < 8 ; k++){
-							if (Joueurs[q][k].couleur == Atout && Joueurs[q][k].RangAtout < RangAtoutMaitre && Joueurs[q][k].jouee == false){
+							if (Joueurs[q][k].couleur == Atout && Joueurs[q][k].RangAtout < RangAtoutMaitre 
+									&& Joueurs[q][k].jouee == false){
 								CartesJouables.add(Joueurs[q][k]);
 							}
 						}
-						if (CartesJouables.size() != 0){
+						if (CartesJouables.size() != 0){ 
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangAtout > CartesJouables.get(IndiceJouable).RangAtout) {
+								if (CartesJouables.get(i).RangAtout > 
+										CartesJouables.get(IndiceJouable).RangAtout) {
 									IndiceJouable = i ;
 								}
 							}
 							CarteBientotJouee = CartesJouables.get(IndiceJouable);
 							choix = CarteToIndice(CarteBientotJouee,q);
 						}
-						else {
+						else {				// Sinon on sous-coupe 
 							for (int k = 0 ; k < 8 ; k++){
 								if (Joueurs[q][k].couleur == Atout && Joueurs[q][k].jouee == false){
 									CartesJouables.add(Joueurs[q][k]);
@@ -2089,7 +1774,7 @@ public class Fenetre extends JFrame implements ActionListener{
 								CarteBientotJouee = CartesJouables.get(IndiceJouable);
 								choix = CarteToIndice(CarteBientotJouee,q);
 							}
-							else {
+							else { 				// Si on n'a pas d'aout, on pose une petite carte
 								for (int k = 0 ; k < 8 ; k++){
 									if (Joueurs[q][k].jouee == false){
 										CartesJouables.add(Joueurs[q][k]);
@@ -2097,7 +1782,8 @@ public class Fenetre extends JFrame implements ActionListener{
 								}
 								int IndiceJouable = 0;
 								for (int i = 0 ; i < CartesJouables.size(); i++){
-									if (CartesJouables.get(i).RangNonAtout > CartesJouables.get(IndiceJouable).RangNonAtout) {
+									if (CartesJouables.get(i).RangNonAtout > 
+											CartesJouables.get(IndiceJouable).RangNonAtout) {
 										IndiceJouable = i ;
 									}
 								}
@@ -2111,40 +1797,76 @@ public class Fenetre extends JFrame implements ActionListener{
 				}
 
 			}
-			else { 											// Premier ‡ jouer
+			else { 											// Premier √† jouer
+				int nbAtout = CompteAtout(q);    //atouts joues + en main
 				for (int k = 0 ; k < 8 ; k++){
 					if (Joueurs[q][k].jouee == false){
 						CartesJouables.add(Joueurs[q][k]);
 					}
 				}
-				for (Carte Carte : CartesJouables){
-					if (CarteAtoutMaitre.isequal(Carte)){
-						choix = CarteToIndice(Carte,q);
-					}
-				}
-				if (choix == -1){
-					for (Carte carte : CartesMaitres){
-						if (contient(CartesJouables, carte)){
-							CarteBientotJouee = carte;
+				// Si tous les atouts autres que ceux que nous avons ne sont pas tomb√©s
+				if (nbAtout != 8){			
+					for (Carte Carte : CartesJouables){ // On met sa carte maitre d'atout 
+						if (CarteAtoutMaitre.isequal(Carte)){
+							choix = CarteToIndice(Carte,q);
 						}
 					}
-					choix = CarteToIndice(CarteBientotJouee,q);
-				}
-				else {
-					int IndiceJouable = 0;
-					for (int i = 0 ; i < CartesJouables.size(); i++){
-						if (CartesJouables.get(i).RangNonAtout > CartesJouables.get(IndiceJouable).RangNonAtout) {
-							IndiceJouable = i ;
+					if (choix == -1){		// On met ses autres cartes maitres
+						for (Carte carte : CartesMaitres){
+							if (contient(CartesJouables, carte)){
+								CarteBientotJouee = carte;
+								choix = CarteToIndice(CarteBientotJouee,q);
+							}
 						}
 					}
-					CarteBientotJouee = CartesJouables.get(IndiceJouable);
-					choix = CarteToIndice(CarteBientotJouee,q);
+					if (choix == -1) { 		// On met des petites cartes
+						int IndiceJouable = 0;
+						for (int i = 0 ; i < CartesJouables.size(); i++){
+							if (CartesJouables.get(i).RangNonAtout > 
+									CartesJouables.get(IndiceJouable).RangNonAtout) {
+								IndiceJouable = i ;
+							}
+						}
+						CarteBientotJouee = CartesJouables.get(IndiceJouable);
+						choix = CarteToIndice(CarteBientotJouee,q);
+					}
+
+				}
+				else {			// Tous les atouts qui restent sont dans notre main
+					if (choix == -1){
+						for (Carte carte : CartesMaitres){ // On met nos cartes maitres
+							if (contient(CartesJouables, carte)){
+								CarteBientotJouee = carte;
+								choix = CarteToIndice(CarteBientotJouee,q);
+							}
+						}
+					}
+					if (choix == -1) {		// On met des peites cartes
+						int IndiceJouable = 0;
+						for (int i = 0 ; i < CartesJouables.size(); i++){
+							if (CartesJouables.get(i).RangNonAtout > 
+									CartesJouables.get(IndiceJouable).RangNonAtout) {
+								IndiceJouable = i ;
+							}
+						}
+						CarteBientotJouee = CartesJouables.get(IndiceJouable);
+						choix = CarteToIndice(CarteBientotJouee,q);
+					}
+					if (choix == -1) { 		// On met nos atous 
+						for (Carte Carte : CartesJouables){
+							if (CarteAtoutMaitre.isequal(Carte)){
+								choix = CarteToIndice(Carte,q);
+							}
+						}
+					}
 				}
 			}
-			
+			if (Joueurs[q][choix].jouee == true){  // Test
+				throw new IllegalStateException("La carte " + Joueurs[q][choix].toString() + " a d√©j√† √©t√©e jou√©e pour le joueur " + q);
+			}
 			Joueurs[q][choix].jouee = true ;
 
-			if (q==1){
+			if (q==1){ // On met a jour les affichages en fonction du joueur
 				container.Gauche = Joueurs[q][choix].picture[1];
 				CartesPlateau.add(Joueurs[q][choix]);
 				container.gauche = true;
@@ -2168,7 +1890,22 @@ public class Fenetre extends JFrame implements ActionListener{
 			pause((int)(500/vitesse));
 		}
 		
-		private void ActualiseRangAtoutMaitre() {
+		public int CompteAtout(int numJoueur){ // Compte les atouts tomb√©es + ceux en main
+			int nb = 0;
+			for (Carte c : CartesTombees){
+				if (c.couleur == Atout){
+					nb++;
+				}
+			}
+			for (Carte c : Joueurs[numJoueur]){
+				if (c.couleur == Atout && c.jouee == false){
+					nb++;
+				}
+			}
+			return nb;
+		}
+		
+		private void ActualiseRangAtoutMaitre() {	// Le rang du meilleur atout du pli actuel
 			RangAtoutMaitre = 8;
 			for (Carte i : CartesPlateau){
 				if (i.couleur == Atout && i.RangAtout < RangAtoutMaitre)
@@ -2185,6 +1922,10 @@ public class Fenetre extends JFrame implements ActionListener{
 			for (Bouton b : Boutons)
 				b.setVisible(true);
 			
+			for (int i = 0; i<4; i++)
+				for (int j = 0; j<8; j++)
+					Joueurs[i][j].jouee = false;
+			
 			AnnonceBas.setText("---");
 			AnnonceGauche.setText("---");
 			AnnonceHaut.setText("---");
@@ -2195,14 +1936,10 @@ public class Fenetre extends JFrame implements ActionListener{
 			AnnonceHaut.setVisible(true);
 			AnnonceDroite.setVisible(true);
 			
-			JoueurGauche.AlwaysPassed=true;
-			JoueurHaut.AlwaysPassed=true;
-			JoueurDroite.AlwaysPassed=true;
-			Humain.AlwaysPassed=true;
-			
 			annonc.setVisible(true);
 		}
 
+		// Le MAIN
 		public static void main(String[] args) {
 			PartieEnCours.start();  //On lance un thread Instance de partie
 		}

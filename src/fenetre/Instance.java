@@ -10,7 +10,6 @@ public class Instance extends Thread {
   }
 
   public void run(){
-	  @SuppressWarnings("unused")
-	  Fenetre Letsgo = new Fenetre(phase);
+	  new Fenetre(phase);
   }       
 }

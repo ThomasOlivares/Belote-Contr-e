@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.9" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
+  <class id="1" language="java" name="fenetre.Fenetre" project="Contree" file="/Contree/src/fenetre/Fenetre.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="502" width="271" x="174" y="-205"/>    
+    <display autosize="false" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" name="fenetre.Fenetre.ItemState" project="Contree" 
+    file="/Contree/src/fenetre/Fenetre.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="140" y="470"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="fenetre.Fenetre.special" project="Contree" 
+    file="/Contree/src/fenetre/Fenetre.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="288" y="379"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="fenetre.Fenetre.classique" project="Contree" 
+    file="/Contree/src/fenetre/Fenetre.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="410" y="457"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="fenetre.Annonce" project="Contree" file="/Contree/src/fenetre/Annonce.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="646" y="-151"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="fenetre.Bouton" project="Contree" file="/Contree/src/fenetre/Bouton.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="636" y="421"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="fenetre.BoutonAnnonces" project="Contree" 
+    file="/Contree/src/fenetre/BoutonAnnonces.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="-57" y="-11"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="fenetre.Carte" project="Contree" file="/Contree/src/fenetre/Carte.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="679" y="219"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="fenetre.CarteIA" project="Contree" file="/Contree/src/fenetre/CarteIA.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="914" y="251"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="fenetre.DernierPli" project="Contree" file="/Contree/src/fenetre/DernierPli.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="926" y="-93"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="fenetre.IA" project="Contree" file="/Contree/src/fenetre/IA.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="938" y="57"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="fenetre.ImageIA" project="Contree" file="/Contree/src/fenetre/ImageIA.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="928" y="-172"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="fenetre.Instance" project="Contree" file="/Contree/src/fenetre/Instance.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="64" width="103" x="-41" y="186"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="14" language="java" name="fenetre.Joueur" project="Contree" file="/Contree/src/fenetre/Joueur.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="678" y="-17"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="fenetre.LabelAnnonce" project="Contree" 
+    file="/Contree/src/fenetre/LabelAnnonce.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="-63" y="136"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="fenetre.Menu" project="Contree" file="/Contree/src/fenetre/Menu.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="0" y="-150"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="17" language="java" name="fenetre.Panneau" project="Contree" file="/Contree/src/fenetre/Panneau.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="-17" y="339"/>    
+    <display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <association id="18">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="19" name="JoueurGauche">        
+        <position height="0" width="0" x="-10" y="-78"/>      
+      </attribute>      
+      <multiplicity id="20" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-10" y="-78"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="21">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="22" name="Boutons">        
+        <position height="0" width="0" x="4" y="-82"/>      
+      </attribute>      
+      <multiplicity id="23" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="4" y="-82"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="24">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="25" name="PartieEnCours">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="26" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="27">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="28" name="annoncePique">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </attribute>      
+      <multiplicity id="29" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="30">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="31" name="JoueurHaut">        
+        <position height="0" width="0" x="-10" y="-78"/>      
+      </attribute>      
+      <multiplicity id="32" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-10" y="-78"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="33">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="34" name="carteBouton">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="35" minimum="0" maximum="1">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="36">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="37" name="Joueurs">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="38" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="39">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="40" name="AnnonceGauche">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </attribute>      
+      <multiplicity id="41" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="42">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="4"/>  
+  </nesting>  
+  <association id="43">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="44" name="IAgauche">        
+        <position height="0" width="0" x="42" y="-48"/>      
+      </attribute>      
+      <multiplicity id="45" minimum="0" maximum="1">        
+        <position height="0" width="0" x="42" y="-48"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="46">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="47" name="CartesTombees">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="48" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="49">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="50" name="annonceCoeur">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </attribute>      
+      <multiplicity id="51" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="52">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="53" name="AnnonceGagnante">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </attribute>      
+      <multiplicity id="54" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="55">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="56" name="AnnonceIA">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </attribute>      
+      <multiplicity id="57" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="58">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="59" name="AnnonceDroite">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </attribute>      
+      <multiplicity id="60" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="61">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="62" name="Liste_Cartes">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="63" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="64">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="65" name="carte">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="66" minimum="0" maximum="1">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="67">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="68" name="annonceTrefle">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </attribute>      
+      <multiplicity id="69" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="70">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="71" name="AnnonceJoueur">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </attribute>      
+      <multiplicity id="72" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="73">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="74" name="annonceCarreau">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </attribute>      
+      <multiplicity id="75" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-33" y="113"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="76">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="77" name="DerniereAnnonce">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </attribute>      
+      <multiplicity id="78" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="79">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="80" name="AnnonceBas">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </attribute>      
+      <multiplicity id="81" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="82">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="83" name="IAdroite">        
+        <position height="0" width="0" x="42" y="-48"/>      
+      </attribute>      
+      <multiplicity id="84" minimum="0" maximum="1">        
+        <position height="0" width="0" x="42" y="-48"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="85">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="86" name="CartesPlateau">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="87" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="88">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="89" name="JoueurDroite">        
+        <position height="0" width="0" x="-10" y="-78"/>      
+      </attribute>      
+      <multiplicity id="90" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-10" y="-78"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="91">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="92" name="Cartes">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="93" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="94">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="95" name="IAhaut">        
+        <position height="0" width="0" x="42" y="-48"/>      
+      </attribute>      
+      <multiplicity id="96" minimum="0" maximum="1">        
+        <position height="0" width="0" x="42" y="-48"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="97">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="3"/>  
+  </nesting>  
+  <association id="98">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="99" name="AnnonceHaut">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </attribute>      
+      <multiplicity id="100" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-39" y="56"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="101">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="102" name="CartesMaitres">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="103" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="104">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="2"/>  
+  </nesting>  
+  <association id="105">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="106" name="container">        
+        <position height="0" width="0" x="9" y="-232"/>      
+      </attribute>      
+      <multiplicity id="107" minimum="0" maximum="1">        
+        <position height="0" width="0" x="9" y="-232"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="108">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="109" name="DerniereAnnonce">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </attribute>      
+      <multiplicity id="110" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-59" y="-52"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="111">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="112" name="CarteAtoutMaitre">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </attribute>      
+      <multiplicity id="113" minimum="0" maximum="1">        
+        <position height="0" width="0" x="5" y="-71"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="114">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="115" name="Cartes">        
+        <position height="0" width="0" x="-3" y="-98"/>      
+      </attribute>      
+      <multiplicity id="116" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-3" y="-98"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="false" package="false" protected="false" private="false" static="false"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

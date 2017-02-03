@@ -3,7 +3,6 @@ package fenetre;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.JPanel;
 import javax.imageio.ImageIO; 
 import java.awt.Graphics;
@@ -34,7 +33,7 @@ public class Panneau extends JPanel{
 	
 	public void paintComponent(Graphics g){
 		Image img;
-		Font police = new Font("Tahoma", Font.BOLD, 30);
+		Font police = new Font("Tahoma", Font.BOLD, 25);
 		try {
 			img = ImageIO.read(new File("Fond.jpeg"));
 			g.drawImage(img, 0, 0, this);
@@ -44,11 +43,11 @@ public class Panneau extends JPanel{
 		}
 		int i = entame;
 		g.setFont(police);
-		g.setColor(Color.ORANGE);
-		g.drawString(Fenetre.noms[0], 990, this.getHeight()-50);
+		g.setColor(Color.CYAN);
+		g.drawString(Fenetre.noms[0], 1020, this.getHeight()-50);
 		g.drawString(Fenetre.noms[1], 0, this.getHeight()-140);
-		g.drawString(Fenetre.noms[2], 990, 60);
-		g.drawString(Fenetre.noms[3], 1020, this.getHeight()-140);
+		g.drawString(Fenetre.noms[2], 1020, 60);
+		g.drawString(Fenetre.noms[3], 1050, this.getHeight()-140);
 	
 		for (int j = 0; j<4; j++){
 			if (i == 0 && bas)
@@ -61,6 +60,12 @@ public class Panneau extends JPanel{
 				g.drawImage(Droite, 600, 270, this);
 			i = (i+1)%4;
 		}
+		g.drawString("Score Joueur : " + Fenetre.ScoreJoueurProvisoire, 0, 30);
+		g.drawString("Score IA : " + Fenetre.ScoreIAProvisoire, 0, 60);
+		if (Fenetre.Atout !="aucun")
+			g.drawString(((Fenetre.AnnonceGagnante.getValeur() == 250) ? 
+					"Capot" : Fenetre.AnnonceGagnante.getValeur() )+ " " 
+					+ Fenetre.AnnonceGagnante.getCouleur(), 0, 100);
 	} 
 }
 
