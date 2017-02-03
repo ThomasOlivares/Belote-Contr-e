@@ -2,7 +2,7 @@ package fenetre;
 
 public class Instance extends Thread {
 	
-	public String phase;
+	private String phase;
 
   public Instance(String phase){
     super(phase);

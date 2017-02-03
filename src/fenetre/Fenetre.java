@@ -49,7 +49,7 @@ public class Fenetre extends JFrame implements ActionListener{
 	private JMenuItem regles = new JMenuItem("Règles");
 	private static Instance PartieEnCours = new Instance("MenuPrincipal");
 	private Boolean go = false;
-	public static String[] noms = {"Paul", "Martin", "Meric", "Thomas"};
+	private static String[] noms = {"Paul", "Martin", "Meric", "Thomas"};
 	
 	//---------  Variables de la phase d'annonce -----------
 	private boolean ecouteAnnonce = false; //Indique si c'est au tour du joueur d'annoncer
@@ -59,7 +59,7 @@ public class Fenetre extends JFrame implements ActionListener{
 	private List<BoutonAnnonces> annonceTrefle = new LinkedList<BoutonAnnonces>();
 	private List<JButton> annonceSpecial = new LinkedList<JButton>();
 	private int passe=0;   //Compte le nombre de joueurs qui passent leur tour
-	public static Annonce AnnonceGagnante = new Annonce();   //Indique la dernière annonce effectuée
+	private static Annonce AnnonceGagnante = new Annonce();   //Indique la dernière annonce effectuée
 	private JPanel annonc; // Panneau gérant tous les boutons d'annonces
 	private LabelAnnonce AnnonceBas = new LabelAnnonce("---");  // Affichage des annonces (en rouge)
 	private LabelAnnonce AnnonceGauche = new LabelAnnonce("---");
@@ -94,11 +94,11 @@ public class Fenetre extends JFrame implements ActionListener{
     private String[] Couleurs = {"trefle", "carreau","coeur","pique"};
     private String[] OrdreCartesNonAtout = {"as","10","roi","dame","valet","9","8","7",""};
     private String[] OrdreCartesAtout = {"valet","9","as","10","roi","dame","8","7",""};
-    public static int ScoreIAProvisoire = 0 ;
-    public static int ScoreJoueurProvisoire = 0 ;
-    public static int ScoreJoueur = 0 ;
-    public static int ScoreIA = 0 ;
-    public static int WinScore = 1000 ;  //Score nécessaire pour gagner
+    private static int ScoreIAProvisoire = 0 ;
+    private static int ScoreJoueurProvisoire = 0 ;
+    private static int ScoreJoueur = 0 ;
+    private static int ScoreIA = 0 ;
+    private static int WinScore = 1000 ;  //Score nécessaire pour gagner
     private boolean pliIA = false ;
     private boolean pliJoueur = false ;
     
@@ -110,8 +110,8 @@ public class Fenetre extends JFrame implements ActionListener{
     private JButton NvPartie;
     private JButton Regles;
     private JButton Options;
-    public static String Atout = "aucun";  //Couleur de l'atout
-    public static Boolean masquer = true; //indique si on masque les cartes des IA (jeu normal) ou non (tests)
+    private static String Atout = "aucun";  //Couleur de l'atout
+    private static Boolean masquer = true; //indique si on masque les cartes des IA (jeu normal) ou non (tests)
     
     /**
      * Programme principal, 
@@ -238,7 +238,7 @@ public class Fenetre extends JFrame implements ActionListener{
         		quitter.doClick();
         	}
         });
-        JButton b3 = new JButton(new ImageIcon("mini_carte.jpeg"));
+        JButton b3 = new JButton(new ImageIcon("images/mini_carte.jpeg"));
         b3.addActionListener(new ActionListener(){
         	public void actionPerformed(ActionEvent event){
         		dernierPli.doClick();
@@ -469,7 +469,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			pause((int)(1000/vitesse));
 			while(carte_jouer<8){  //Boucle gérant une partie en phase de jeu
 				//On précise au plateau quelle carte il dessine en dessous des autres
-				container.entame = entame;  
+				container.setEntame(entame);  
 				int i=entame;  //i est le numero du joueur qui joue 
 				for (int j = 0; j<4 ; j++){  //boucle gérant un tour
 					if (i==0)
@@ -494,10 +494,10 @@ public class Fenetre extends JFrame implements ActionListener{
 				CartesPlateau = new LinkedList<Carte>();
 				ActualiseCartesMaitres();
 				pause((int)(500/vitesse));
-				container.bas = false;  //On efface les cartes sur le tapis de jeu
-				container.gauche = false;
-				container.haut = false;
-				container.droite = false;
+				container.setBas(false);  //On efface les cartes sur le tapis de jeu
+				container.setGauche(false);
+				container.setHaut(false);
+				container.setDroite(false);
 				container.repaint();
 				carte_jouer++;
 				pause((int)(500/vitesse));
@@ -679,22 +679,22 @@ public class Fenetre extends JFrame implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {  //Gestion de l'appui sur les les cartes du joueur
 			Bouton b=(Bouton)arg0.getSource();
 			if (ecouteJoue){  //On a cliquer sur un bouton
-				container.Bas = b.picture;
-				container.bas = true;
+				container.setBas(b.getPicture());
+				container.setBas(true);
 				b.setVisible(false);
 				container.repaint();
 				ecouteJoue=false;
-				CartesPlateau.add(b.carteBouton);
+				CartesPlateau.add(b.getCarteBouton());
 				ActualiseRangAtoutMaitre();
-				Joueurs[0][CarteToIndice(b.carteBouton, 0)].jouee = true;
+				Joueurs[0][CarteToIndice(b.getCarteBouton(), 0)].setJouee(true);
 			}
 			else if (ecouteAnnonce){
 				int ind1 = -1;
 				int ind2 = -1;
 				for (int i = 0; i<8; i++){
-					if (Boutons.get(i).echange && ind1==-1)
+					if (Boutons.get(i).isEchange() && ind1==-1)
 						ind1=i;
-					else if (Boutons.get(i).echange)
+					else if (Boutons.get(i).isEchange())
 						ind2=i;
 				}
 				if (ind1!=-1 && ind2!=-1){
@@ -717,7 +717,7 @@ public class Fenetre extends JFrame implements ActionListener{
 							Boutons.add(temp2.get(i));
 					}
 					for (int i = 0; i<Boutons.size(); i++){
-						Boutons.get(i).echange = false;
+						Boutons.get(i).setEchange(false);
 					}
 				}
 				for (int i = 0; i<Boutons.size(); i++){
@@ -824,12 +824,15 @@ public class Fenetre extends JFrame implements ActionListener{
 		}
 		
 		public void setCartes(){
-			for (Carte c : Joueurs[1])
-				JoueurGauche.Cartes.add(c);
-			for (Carte c : Joueurs[2])
-				JoueurHaut.Cartes.add(c);
-			for (Carte c : Joueurs[3])
-				JoueurDroite.Cartes.add(c);
+			for (Carte c : Joueurs[1]){
+				JoueurGauche.addCarte(c);
+			}
+			for (Carte c : Joueurs[2]){
+				JoueurHaut.addCarte(c);
+			}
+			for (Carte c : Joueurs[3]){
+				JoueurDroite.addCarte(c);
+			}
 		}
 		
 		public void Annonce(int numJoueur){  //Gestion des annonces des IA
@@ -941,7 +944,7 @@ public class Fenetre extends JFrame implements ActionListener{
 		public Annonce CalculAnnonce(String couleur, Carte[] main, int numJoueur){
 			List<Carte> mainAtout = new LinkedList<Carte>();
 			for (int i = 0; i<8; i++){
-				if (main[i].couleur == couleur)
+				if (main[i].getCouleur() == couleur)
 					mainAtout.add(main[i]);
 			}
 			Boolean cond80 = ((contient(mainAtout, new Carte("valet", couleur)) || 
@@ -963,7 +966,7 @@ public class Fenetre extends JFrame implements ActionListener{
 		public int CompteAs(Carte[] main){
 			int nbAs = 0;
 			for (int i = 0; i<8; i++){
-				if (main[i].valeur == "as"){
+				if (main[i].getValeur() == "as"){
 					nbAs++;
 				}
 			}
@@ -1062,7 +1065,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			int ajout = 0;
 			List<Carte> mainAtout = new LinkedList<Carte>();
 			for (int i = 0; i<8; i++){
-				if (main[i].couleur == primaire.getCouleur())
+				if (main[i].getCouleur() == primaire.getCouleur())
 					mainAtout.add(main[i]);
 			}
 			if (contient(main, new Carte("valet", primaire.getCouleur())) 
@@ -1071,7 +1074,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			}
 			int nbAs = 0;
 			for (Carte c : main){
-				if (c.valeur == "as" && c.couleur!=primaire.getCouleur()){
+				if (c.getValeur() == "as" && c.getCouleur()!=primaire.getCouleur()){
 					nbAs++;
 				}
 			}
@@ -1143,7 +1146,7 @@ public class Fenetre extends JFrame implements ActionListener{
 				if (maitrise){
 					int nbPli = 0;
 					for (int i = 0; i<8; i++){
-						if (main[i].couleur == derniere.getCouleur()){
+						if (main[i].getCouleur() == derniere.getCouleur()){
 							nbPli+=1;
 						}
 						String[] couleur = {"coeur", "carreau", "pique", "trefle"};
@@ -1420,19 +1423,19 @@ public class Fenetre extends JFrame implements ActionListener{
 		
 		public int value(Carte test){
 			Atout = AnnonceGagnante.getCouleur();
-			if (test.valeur == "as" )
+			if (test.getValeur() == "as" )
 				return 11 ;
-			if (test.valeur == "roi")
+			if (test.getValeur() == "roi")
 				return 4 ;
-			if (test.valeur == "dame")
+			if (test.getValeur() == "dame")
 				return 3 ;
-			if (test.valeur == "10")
+			if (test.getValeur() == "10")
 				return 10 ;
-			if (test.valeur == "valet" && Atout == test.couleur)
+			if (test.getValeur() == "valet" && Atout == test.getCouleur())
 				return 20 ;
-			if (test.valeur == "9" && Atout == test.couleur)
+			if (test.getValeur() == "9" && Atout == test.getCouleur())
 				return 14 ;
-			if (test.valeur == "valet" && Atout != test.couleur)
+			if (test.getValeur() == "valet" && Atout != test.getCouleur())
 				return 2 ; 
 			return 0 ;
 		}
@@ -1443,7 +1446,7 @@ public class Fenetre extends JFrame implements ActionListener{
 				while (!trie){
 					trie = true;
 					for (int j = 0; j<7; j++){
-						if (Joueurs[i][j].valeurTri>Joueurs[i][j+1].valeurTri){
+						if (Joueurs[i][j].getValeurTri()>Joueurs[i][j+1].getValeurTri()){
 							Carte temp = Joueurs[i][j];
 							Joueurs[i][j] = Joueurs[i][j+1];
 							Joueurs[i][j+1] = temp;
@@ -1477,29 +1480,25 @@ public class Fenetre extends JFrame implements ActionListener{
 		
 		public void initialiseMainIA(){ //place les cartes dans les mains des IA
 			//On supprime tous les boutons liés aux cartes de la partie précédente
-			for (int i = 0; i<IAgauche.Cartes.size(); i++){  
+			for (int i = 0; i<IAgauche.getNumberCartes(); i++){  
 				haut.remove(1);
 				gauche.remove(1);
 				droite.remove(1);
 			}
 			
-			IAgauche.Cartes = new LinkedList<CarteIA>();
-			IAhaut.Cartes = new LinkedList<CarteIA>();
-			IAdroite.Cartes = new LinkedList<CarteIA>();
-			
 			gauche.setLayout(new GridLayout(9, 1));
 			droite.setLayout(new GridLayout(9, 1));
 			
 			for (int i =0; i<8; i++){
-				IAgauche.Cartes.add(new CarteIA(Joueurs[1][i]));
-				gauche.add(IAgauche.Cartes.get(i));
-				IAgauche.Cartes.get(i).setPreferredSize(new Dimension(130,89));
-				IAhaut.Cartes.add(new CarteIA(Joueurs[2][i]));
-				haut.add(IAhaut.Cartes.get(i));
-				IAhaut.Cartes.get(i).setPreferredSize(new Dimension(89,130));
-				IAdroite.Cartes.add(new CarteIA(Joueurs[3][i]));
-				droite.add(IAdroite.Cartes.get(i));
-			    IAdroite.Cartes.get(i).setPreferredSize(new Dimension(130,89));
+				IAgauche.addCarte(new CarteIA(Joueurs[1][i]));
+				gauche.add(IAgauche.getCarte(i));
+				IAgauche.getCarte(i).setPreferredSize(new Dimension(130,89));
+				IAhaut.addCarte(new CarteIA(Joueurs[2][i]));
+				haut.add(IAhaut.getCarte(i));
+				IAhaut.getCarte(i).setPreferredSize(new Dimension(89,130));
+				IAdroite.addCarte(new CarteIA(Joueurs[3][i]));
+				droite.add(IAdroite.getCarte(i));
+			    IAdroite.getCarte(i).setPreferredSize(new Dimension(130,89));
 			}
 			gauche.repaint();
 			haut.repaint();
@@ -1520,30 +1519,34 @@ public class Fenetre extends JFrame implements ActionListener{
 				b.setEnabled(true);
 			List<Carte> cartesJouables = new LinkedList<Carte>();
 			for (Carte EnMain : Joueurs[0])
-				if (!EnMain.jouee)
+				if (!EnMain.isJouee())
 					cartesJouables.add(EnMain);
 			if (CartesPlateau.size() != 0){  //Si on est le premier a jouer, on joue ce qu'on veut
 				Carte actuelle = CartesPlateau.get(0);
-				if (actuelle.couleur == Atout){  //On demande de l'atout
+				if (actuelle.getCouleur() == Atout){  //On demande de l'atout
 					boolean jePeuxJouer = false;
 					boolean jaiDeLAtout = false;  //Indique si le jouer a de l'atout
 					for (Carte EnMain : cartesJouables){
-						if (EnMain.couleur == Atout)
+						if (EnMain.getCouleur().equals(Atout)){
 							jaiDeLAtout = true;
+						}
 					}
 					if (jaiDeLAtout){  //Si le joueur n'as pas d'atout il joue ce qu'il veut
 						Carte PlusForte = CartesPlateau.get(0); //Meilleur atout en jeu
 						for (Carte plat : CartesPlateau)   //On détermine le meilleur atout
-							if (plat.RangAtout < PlusForte.RangAtout && plat.couleur == Atout)
+							if (plat.getRangAtout() < PlusForte.getRangAtout() && plat.getCouleur() == Atout)
 								PlusForte = plat;
 						for (Carte EnMain : cartesJouables)
 							//Peut-on monter à l'atout ?
-							if (EnMain.couleur == Atout && (EnMain.RangAtout < PlusForte.RangAtout)) 
+							if (EnMain.getCouleur() == Atout && (EnMain.getRangAtout() 
+									< PlusForte.getRangAtout())){
 								jePeuxJouer = true;
+							}
 						//On désactive (enfin) les boutons des cartes interdites
 						for (int i = 0; i<cartesJouables.size(); i++){  
-							if (cartesJouables.get(i).couleur != Atout || 
-									(jePeuxJouer && cartesJouables.get(i).RangAtout > actuelle.RangAtout)){
+							if (cartesJouables.get(i).getCouleur() != Atout || 
+									(jePeuxJouer && cartesJouables.get(i).getRangAtout() 
+									> actuelle.getRangAtout())){
 								Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 							}
 						}
@@ -1552,13 +1555,13 @@ public class Fenetre extends JFrame implements ActionListener{
 				else{  //On ne demande pas d'atout
 					boolean jaiLaCouleur = false;
 					for (Carte EnMain : cartesJouables){
-						if (EnMain.couleur == actuelle.couleur)
+						if (EnMain.getCouleur() == actuelle.getCouleur())
 							jaiLaCouleur = true;
 					}
 					if (jaiLaCouleur){
 						//On désactive les boutons des cartes interdites
 						for (int i = 0; i<cartesJouables.size(); i++){  
-							if (cartesJouables.get(i).couleur != actuelle.couleur){
+							if (cartesJouables.get(i).getCouleur() != actuelle.getCouleur()){
 								Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 							}
 						}
@@ -1567,18 +1570,20 @@ public class Fenetre extends JFrame implements ActionListener{
 						boolean jePeuxJouer = false;
 						boolean jaiDeLAtout = false;  //Indique si le jouer a de l'atout
 						for (Carte EnMain : cartesJouables)
-							if (EnMain.couleur == Atout)
+							if (EnMain.getCouleur().equals(Atout))
 								jaiDeLAtout = true;
 						if (jaiDeLAtout){  //Si le joueur n'as pas d'atout il joue ce qu'il veut
 							Carte PlusForte = new Carte("temp", "temp"); //Meilleur atout en jeu
-							PlusForte.RangAtout = 50;
+							PlusForte.setRangAtout(50);
 							for (Carte plat : CartesPlateau)   //On détermine le meilleur atout
-								if (plat.RangAtout < PlusForte.RangAtout && plat.couleur == Atout)
+								if (plat.getRangAtout() < PlusForte.getRangAtout() 
+										&& plat.getCouleur().equals(Atout)){
 									PlusForte = plat;
-							if (PlusForte.RangAtout == 50){
+								}
+							if (PlusForte.getRangAtout() == 50){
 								//On désactive les boutons des cartes interdites
 								for (int i = 0; i<cartesJouables.size(); i++){  
-									if (cartesJouables.get(i).couleur != Atout){
+									if (cartesJouables.get(i).getCouleur() != Atout){
 										Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 									}
 								}
@@ -1586,12 +1591,15 @@ public class Fenetre extends JFrame implements ActionListener{
 							else{
 								for (Carte EnMain : cartesJouables)
 									//Peut-on monter à l'atout ?
-									if (EnMain.couleur == Atout && (EnMain.RangAtout < PlusForte.RangAtout)) 
+									if (EnMain.getCouleur() == Atout && (EnMain.getRangAtout() 
+											< PlusForte.getRangAtout())){
 										jePeuxJouer = true;
+									}
 								//On désactive (enfin) les boutons des cartes interdites
 								for (int i = 0; i<cartesJouables.size(); i++){  
-									if (Joueurs[0][i].couleur != Atout || 
-											(jePeuxJouer && Joueurs[0][i].RangAtout > actuelle.RangAtout)){
+									if (Joueurs[0][i].getCouleur() != Atout || 
+											(jePeuxJouer && Joueurs[0][i].getRangAtout() 
+											> actuelle.getRangAtout())){
 										Boutons.get(CarteToIndice(cartesJouables.get(i), 0)).setEnabled(false);
 									}
 								}
@@ -1605,21 +1613,25 @@ public class Fenetre extends JFrame implements ActionListener{
 		public int checkGagnant(){ // Renvoie le numero du gagnant du pli
 			boolean atout = false;
 			int gagnante = 0;
-			String couleurDemandee = CartesPlateau.get(0).couleur;
+			String couleurDemandee = CartesPlateau.get(0).getCouleur();
 			for (int i = 0; i<4; i++){
-				if (CartesPlateau.get(i).couleur == Atout || atout){
+				if (CartesPlateau.get(i).getCouleur() == Atout || atout){
 					atout = true;
-					if ((CartesPlateau.get(i).RangAtout < CartesPlateau.get(gagnante).RangAtout
-							&& CartesPlateau.get(i).couleur == Atout)
-								|| (CartesPlateau.get(i).couleur == Atout
-									&&  CartesPlateau.get(gagnante).couleur != Atout))
+					if ((CartesPlateau.get(i).getRangAtout() < CartesPlateau.get(gagnante).getRangAtout()
+							&& CartesPlateau.get(i).getCouleur() == Atout)
+								|| (CartesPlateau.get(i).getCouleur() == Atout
+									&&  CartesPlateau.get(gagnante).getCouleur() != Atout))
 						gagnante = i;
 				}
 				else{  //Pas d'atout sur le plateau
-					if (CartesPlateau.get(i).couleur == couleurDemandee &&
-							CartesPlateau.get(i).RangNonAtout < CartesPlateau.get(gagnante).RangNonAtout
+					if (CartesPlateau.get(i).getCouleur() == couleurDemandee &&
+							CartesPlateau.get(i).getRangNonAtout() 
+							< CartesPlateau.get(gagnante).getRangNonAtout()
 							&& !atout)
+					{
 						gagnante = i;
+					}
+						
 				}
 					
 			}
@@ -1643,13 +1655,13 @@ public class Fenetre extends JFrame implements ActionListener{
 			// Carte que l'on va bientot jouer 
 			Carte CarteBientotJouee = new Carte("ProblemeValeur","ProblemeCouleur");  
 			if (CartesPlateau.size() != 0){							// Est-on le premier à jouer?
-				String CouleurDemandee = CartesPlateau.get(0).couleur;	// Couleur demandée du pli
+				String CouleurDemandee = CartesPlateau.get(0).getCouleur();	// Couleur demandée du pli
 				if (CouleurDemandee == Atout){
 					for (int k = 0 ; k < 8 ; k++){		
 						/* Si atout demandé, les cartes jouables sont les cartes 
 						 * d'atout meilleures que la meilleure carte atout  jouée */
-						if (Joueurs[q][k].couleur == CouleurDemandee && 
-								Joueurs[q][k].RangAtout < RangAtoutMaitre && Joueurs[q][k].jouee == false){
+						if (Joueurs[q][k].getCouleur() == CouleurDemandee && 
+								Joueurs[q][k].getRangAtout() < RangAtoutMaitre && Joueurs[q][k].isJouee() == false){
 							CartesJouables.add(Joueurs[q][k]);
 						}
 					}
@@ -1665,8 +1677,8 @@ public class Fenetre extends JFrame implements ActionListener{
 						if (choix == -1){			
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangAtout > 
-										CartesJouables.get(IndiceJouable).RangAtout){
+								if (CartesJouables.get(i).getRangAtout() > 
+										CartesJouables.get(IndiceJouable).getRangAtout()){
 									IndiceJouable = i ;
 								}
 									
@@ -1676,7 +1688,7 @@ public class Fenetre extends JFrame implements ActionListener{
 					}
 					else {	// Si on ne peut pas monter à l'atout, on joue le plus petit 
 						for (int k = 0 ; k < 8 ; k++){
-							if (Joueurs[q][k].couleur == CouleurDemandee && Joueurs[q][k].jouee == false){
+							if (Joueurs[q][k].getCouleur() == CouleurDemandee && Joueurs[q][k].isJouee() == false){
 								CartesJouables.add(Joueurs[q][k]);
 							}
 						}
@@ -1684,7 +1696,7 @@ public class Fenetre extends JFrame implements ActionListener{
 						if (CartesJouables.size() !=0) { 
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangAtout > CartesJouables.get(IndiceJouable).RangAtout){
+								if (CartesJouables.get(i).getRangAtout() > CartesJouables.get(IndiceJouable).getRangAtout()){
 									IndiceJouable = i ;
 								}
 								
@@ -1693,13 +1705,13 @@ public class Fenetre extends JFrame implements ActionListener{
 						}
 						else {							// On n'a pas d'atout 
 							for (int k = 0 ; k < 8 ; k++){
-								if (Joueurs[q][k].jouee == false){
+								if (Joueurs[q][k].isJouee() == false){
 									CartesJouables.add(Joueurs[q][k]);
 								}
 							}
 							int IndiceJouable = 0;		// On joue la carte la plus faible 
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangNonAtout > CartesJouables.get(IndiceJouable).RangNonAtout) {
+								if (CartesJouables.get(i).getRangNonAtout() > CartesJouables.get(IndiceJouable).getRangNonAtout()) {
 									IndiceJouable = i ;
 								}
 								
@@ -1712,7 +1724,7 @@ public class Fenetre extends JFrame implements ActionListener{
 				}
 				else {								// Non Atout demandé 
 					for (int k = 0 ; k < 8 ; k++){	// Cartes jouables sont les cartes de la couleur demandée
-						if (Joueurs[q][k].couleur == CouleurDemandee && Joueurs[q][k].jouee == false){
+						if (Joueurs[q][k].getCouleur() == CouleurDemandee && Joueurs[q][k].isJouee() == false){
 							CartesJouables.add(Joueurs[q][k]);
 						}
 					}
@@ -1722,14 +1734,14 @@ public class Fenetre extends JFrame implements ActionListener{
 								CarteBientotJouee = carte;
 							}
 						}
-						if (CarteBientotJouee.valeur != "ProblemeValeur"){
+						if (CarteBientotJouee.getValeur() != "ProblemeValeur"){
 							choix = CarteToIndice(CarteBientotJouee,q);
 						}
 						else {						// On met la carte la ple faible de la couleur demandée
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangNonAtout > 
-										CartesJouables.get(IndiceJouable).RangNonAtout) {
+								if (CartesJouables.get(i).getRangNonAtout() > 
+										CartesJouables.get(IndiceJouable).getRangNonAtout()) {
 									IndiceJouable = i ;
 								}
 							}
@@ -1742,16 +1754,16 @@ public class Fenetre extends JFrame implements ActionListener{
 					 */
 					else{						
 						for (int k = 0 ; k < 8 ; k++){
-							if (Joueurs[q][k].couleur == Atout && Joueurs[q][k].RangAtout < RangAtoutMaitre 
-									&& Joueurs[q][k].jouee == false){
+							if (Joueurs[q][k].getCouleur() == Atout && Joueurs[q][k].getRangAtout() < RangAtoutMaitre 
+									&& Joueurs[q][k].isJouee() == false){
 								CartesJouables.add(Joueurs[q][k]);
 							}
 						}
 						if (CartesJouables.size() != 0){ 
 							int IndiceJouable = 0;
 							for (int i = 0 ; i < CartesJouables.size(); i++){
-								if (CartesJouables.get(i).RangAtout > 
-										CartesJouables.get(IndiceJouable).RangAtout) {
+								if (CartesJouables.get(i).getRangAtout() > 
+										CartesJouables.get(IndiceJouable).getRangAtout()) {
 									IndiceJouable = i ;
 								}
 							}
@@ -1760,14 +1772,14 @@ public class Fenetre extends JFrame implements ActionListener{
 						}
 						else {				// Sinon on sous-coupe 
 							for (int k = 0 ; k < 8 ; k++){
-								if (Joueurs[q][k].couleur == Atout && Joueurs[q][k].jouee == false){
+								if (Joueurs[q][k].getCouleur() == Atout && Joueurs[q][k].isJouee() == false){
 									CartesJouables.add(Joueurs[q][k]);
 								}
 							}
 							if (CartesJouables.size() != 0){
 								int IndiceJouable = 0;
 								for (int i = 0 ; i < CartesJouables.size(); i++){
-									if (CartesJouables.get(i).RangAtout > CartesJouables.get(IndiceJouable).RangAtout) {
+									if (CartesJouables.get(i).getRangAtout() > CartesJouables.get(IndiceJouable).getRangAtout()) {
 										IndiceJouable = i ;
 									}
 								}
@@ -1776,14 +1788,14 @@ public class Fenetre extends JFrame implements ActionListener{
 							}
 							else { 				// Si on n'a pas d'aout, on pose une petite carte
 								for (int k = 0 ; k < 8 ; k++){
-									if (Joueurs[q][k].jouee == false){
+									if (Joueurs[q][k].isJouee() == false){
 										CartesJouables.add(Joueurs[q][k]);
 									}
 								}
 								int IndiceJouable = 0;
 								for (int i = 0 ; i < CartesJouables.size(); i++){
-									if (CartesJouables.get(i).RangNonAtout > 
-											CartesJouables.get(IndiceJouable).RangNonAtout) {
+									if (CartesJouables.get(i).getRangNonAtout() > 
+											CartesJouables.get(IndiceJouable).getRangNonAtout()) {
 										IndiceJouable = i ;
 									}
 								}
@@ -1800,7 +1812,7 @@ public class Fenetre extends JFrame implements ActionListener{
 			else { 											// Premier à jouer
 				int nbAtout = CompteAtout(q);    //atouts joues + en main
 				for (int k = 0 ; k < 8 ; k++){
-					if (Joueurs[q][k].jouee == false){
+					if (Joueurs[q][k].isJouee() == false){
 						CartesJouables.add(Joueurs[q][k]);
 					}
 				}
@@ -1822,8 +1834,8 @@ public class Fenetre extends JFrame implements ActionListener{
 					if (choix == -1) { 		// On met des petites cartes
 						int IndiceJouable = 0;
 						for (int i = 0 ; i < CartesJouables.size(); i++){
-							if (CartesJouables.get(i).RangNonAtout > 
-									CartesJouables.get(IndiceJouable).RangNonAtout) {
+							if (CartesJouables.get(i).getRangNonAtout() > 
+									CartesJouables.get(IndiceJouable).getRangNonAtout()) {
 								IndiceJouable = i ;
 							}
 						}
@@ -1844,8 +1856,8 @@ public class Fenetre extends JFrame implements ActionListener{
 					if (choix == -1) {		// On met des peites cartes
 						int IndiceJouable = 0;
 						for (int i = 0 ; i < CartesJouables.size(); i++){
-							if (CartesJouables.get(i).RangNonAtout > 
-									CartesJouables.get(IndiceJouable).RangNonAtout) {
+							if (CartesJouables.get(i).getRangNonAtout() > 
+									CartesJouables.get(IndiceJouable).getRangNonAtout()) {
 								IndiceJouable = i ;
 							}
 						}
@@ -1861,29 +1873,29 @@ public class Fenetre extends JFrame implements ActionListener{
 					}
 				}
 			}
-			if (Joueurs[q][choix].jouee == true){  // Test
+			if (Joueurs[q][choix].isJouee() == true){  // Test
 				throw new IllegalStateException("La carte " + Joueurs[q][choix].toString() + " a déjà étée jouée pour le joueur " + q);
 			}
-			Joueurs[q][choix].jouee = true ;
+			Joueurs[q][choix].setJouee(true);
 
 			if (q==1){ // On met a jour les affichages en fonction du joueur
-				container.Gauche = Joueurs[q][choix].picture[1];
+				container.setGauche(Joueurs[q][choix].getPicture(1));
 				CartesPlateau.add(Joueurs[q][choix]);
-				container.gauche = true;
-				IAgauche.Cartes.get(choix).setVisible(false);
+				container.setGauche(true);
+				IAgauche.getCarte(choix).setVisible(false);
 			}
 			
 			else if (q==2){
-				container.Haut = Joueurs[q][choix].picture[0];
+				container.setHaut(Joueurs[q][choix].getPicture(0));
 				CartesPlateau.add(Joueurs[q][choix]);
-				container.haut = true;
-				IAhaut.Cartes.get(choix).setVisible(false);
+				container.setHaut(true);
+				IAhaut.getCarte(choix).setVisible(false);
 			}
 			else if (q==3){
-				container.Droite = Joueurs[q][choix].picture[1];
+				container.setDroite(Joueurs[q][choix].getPicture(1));
 				CartesPlateau.add(Joueurs[q][choix]);
-				container.droite = true;
-				IAdroite.Cartes.get(choix).setVisible(false);
+				container.setDroite(true);
+				IAdroite.getCarte(choix).setVisible(false);
 			}
 			gauche.repaint();
 			container.repaint();
@@ -1893,12 +1905,12 @@ public class Fenetre extends JFrame implements ActionListener{
 		public int CompteAtout(int numJoueur){ // Compte les atouts tombées + ceux en main
 			int nb = 0;
 			for (Carte c : CartesTombees){
-				if (c.couleur == Atout){
+				if (c.getCouleur() == Atout){
 					nb++;
 				}
 			}
 			for (Carte c : Joueurs[numJoueur]){
-				if (c.couleur == Atout && c.jouee == false){
+				if (c.getCouleur() == Atout && c.isJouee() == false){
 					nb++;
 				}
 			}
@@ -1908,23 +1920,23 @@ public class Fenetre extends JFrame implements ActionListener{
 		private void ActualiseRangAtoutMaitre() {	// Le rang du meilleur atout du pli actuel
 			RangAtoutMaitre = 8;
 			for (Carte i : CartesPlateau){
-				if (i.couleur == Atout && i.RangAtout < RangAtoutMaitre)
-					RangAtoutMaitre = i.RangAtout;
+				if (i.getCouleur() == Atout && i.getRangAtout() < RangAtoutMaitre)
+					RangAtoutMaitre = i.getRangAtout();
 			}
 		}
 		
 		public void reboot(){
 			for (int i = 0; i<8; i++){
-				IAgauche.Cartes.get(i).setVisible(true);
-				IAhaut.Cartes.get(i).setVisible(true);
-				IAdroite.Cartes.get(i).setVisible(true);
+				IAgauche.getCarte(i).setVisible(true);
+				IAhaut.getCarte(i).setVisible(true);
+				IAdroite.getCarte(i).setVisible(true);
 			}
 			for (Bouton b : Boutons)
 				b.setVisible(true);
 			
 			for (int i = 0; i<4; i++)
 				for (int j = 0; j<8; j++)
-					Joueurs[i][j].jouee = false;
+					Joueurs[i][j].setJouee(false);
 			
 			AnnonceBas.setText("---");
 			AnnonceGauche.setText("---");
@@ -1939,6 +1951,87 @@ public class Fenetre extends JFrame implements ActionListener{
 			annonc.setVisible(true);
 		}
 
+		public static Instance getPartieEnCours() {
+			return PartieEnCours;
+		}
+
+		public static void setPartieEnCours(Instance partieEnCours) {
+			PartieEnCours = partieEnCours;
+		}
+
+		public static String getNom(int num) {
+			return noms[num];
+		}
+
+		public static void setNom(int num, String nouveau) {
+			Fenetre.noms[num] = nouveau;
+		}
+
+		public static Annonce getAnnonceGagnante() {
+			return AnnonceGagnante;
+		}
+
+		public static void setAnnonceGagnante(Annonce annonceGagnante) {
+			AnnonceGagnante = annonceGagnante;
+		}
+
+		public static int getScoreIAProvisoire() {
+			return ScoreIAProvisoire;
+		}
+
+		public static void setScoreIAProvisoire(int scoreIAProvisoire) {
+			ScoreIAProvisoire = scoreIAProvisoire;
+		}
+
+		public static int getScoreJoueurProvisoire() {
+			return ScoreJoueurProvisoire;
+		}
+
+		public static void setScoreJoueurProvisoire(int scoreJoueurProvisoire) {
+			ScoreJoueurProvisoire = scoreJoueurProvisoire;
+		}
+
+		public static int getScoreJoueur() {
+			return ScoreJoueur;
+		}
+
+		public static void setScoreJoueur(int scoreJoueur) {
+			ScoreJoueur = scoreJoueur;
+		}
+
+		public static int getScoreIA() {
+			return ScoreIA;
+		}
+
+		public static void setScoreIA(int scoreIA) {
+			ScoreIA = scoreIA;
+		}
+
+		public static int getWinScore() {
+			return WinScore;
+		}
+
+		public static void setWinScore(int winScore) {
+			WinScore = winScore;
+		}
+
+		public static String getAtout() {
+			return Atout;
+		}
+
+		public static void setAtout(String atout) {
+			Atout = atout;
+		}
+
+		public static Boolean getMasquer() {
+			return masquer;
+		}
+
+		public static void setMasquer(Boolean masquer) {
+			Fenetre.masquer = masquer;
+		}
+		
+		
 		// Le MAIN
 		public static void main(String[] args) {
 			PartieEnCours.start();  //On lance un thread Instance de partie

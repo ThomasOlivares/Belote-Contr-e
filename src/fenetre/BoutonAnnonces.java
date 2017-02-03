@@ -13,10 +13,9 @@ import javax.swing.JButton;
 
 public class BoutonAnnonces extends JButton {
 	
-	public Image picture;
-	public Image barre;
+	private Image picture;
+	private Image barre;
 	private static final long serialVersionUID = 1L;
-	public boolean fond = false;
 	private String texte;
 	private int nbCaracter = 0;
 	private int decalage;
@@ -30,27 +29,26 @@ public class BoutonAnnonces extends JButton {
 		if (couleur != ""){
 			if (this.couleur == "coeur" || this.couleur == "carreau")
 				try {
-					this.barre = ImageIO.read(new File("barre2.png"));
+					this.barre = ImageIO.read(new File("images/barre2.png"));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			else if (this.couleur == "pique" || this.couleur == "trefle")
 				try {
-					this.barre = ImageIO.read(new File("barre.png"));
+					this.barre = ImageIO.read(new File("images/barre.png"));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			nbCaracter = str.length();
-			fond = true;
 			try {
-				this.picture = ImageIO.read(new File(couleur + ".jpeg")); 
+				this.picture = ImageIO.read(new File("images/" + couleur + ".jpeg")); 
 			}
 			catch (IOException e) {
 			}
 		}
 		else{
 			try {
-				this.picture = ImageIO.read(new File("blanc.jpeg")); 
+				this.picture = ImageIO.read(new File("images/blanc.jpeg")); 
 			}
 			catch (IOException e) {
 			}
@@ -69,7 +67,7 @@ public class BoutonAnnonces extends JButton {
 	public void paintComponent(Graphics g){
 		g.drawImage(this.picture, 0, 0, this);
 		g.setFont(new Font("Tahoma", Font.BOLD, 20));
-		if (this.couleur == "coeur" || this.couleur == "carreau"){  //On met du rouge sur du noir et inversement (question de lisibilité)
+		if (this.couleur == "coeur" || this.couleur == "carreau"){  //On met du rouge sur du noir et inversement (question de lisibilitï¿½)
 			g.setColor(Color.BLACK);
 		}
 		else if (this.couleur == "pique" || this.couleur == "trefle")
@@ -78,5 +76,4 @@ public class BoutonAnnonces extends JButton {
 		if (!this.isEnabled())
 			g.drawImage(this.barre, 0, 0, this);
 	}
-
 }

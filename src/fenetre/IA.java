@@ -5,13 +5,35 @@ import java.util.List;
 
 public class IA {
 	
-	public String position;
-	public List<CarteIA> Cartes = new LinkedList<CarteIA>();
-	public Annonce DerniereAnnonce = new Annonce();
+	private String position;
+	private List<CarteIA> cartes;
 	
 	public IA(String position){
 		this.position=position;
+		cartes = new LinkedList<CarteIA>();
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+	public CarteIA getCarte(int num) {
+		return cartes.get(num);
 	}
 	
+	public int getNumberCartes(){
+		return cartes.size();
+	}
+	
+	public void addCarte(CarteIA carte){
+		cartes.add(carte);
+	}
 
+	public void setCartes(int num, CarteIA carte) {
+		cartes.set(num, carte);
+	}
 }

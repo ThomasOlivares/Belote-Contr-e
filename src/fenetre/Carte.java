@@ -7,14 +7,14 @@ import javax.imageio.ImageIO;
 
 public class Carte{
 	
-	public static int largeur = 137;
-	public String valeur;
-	public boolean jouee = false;
-	public String couleur;
-	public int valeurTri = 0;  //Valeur utile uniquement pour trier les cartes
-	public Image[] picture = new Image[2];
-	public int RangAtout;
-	public int RangNonAtout;
+	private static int largeur = 137;
+	private String valeur;
+	private boolean jouee = false;
+	private String couleur;
+	private int valeurTri = 0;  //Valeur utile uniquement pour trier les cartes
+	private Image[] picture = new Image[2];
+	private int RangAtout;
+	private int RangNonAtout;
 	
 	public Carte(String valeur, String couleur){
 		
@@ -23,8 +23,8 @@ public class Carte{
 		setRangs();
 		setValeurTri();
 		try {
-			this.picture[0] = ImageIO.read(new File(valeur + "_" + couleur + ".jpeg"));
-			this.picture[1] = ImageIO.read(new File(valeur + "_" + couleur + "_bis.jpeg"));
+			this.picture[0] = ImageIO.read(new File("images/" + valeur + "_" + couleur + ".jpeg"));
+			this.picture[1] = ImageIO.read(new File("images/" + valeur + "_" + couleur + "_bis.jpeg"));
 		}
 		catch (IOException e) {
 		}
@@ -104,6 +104,57 @@ public class Carte{
 			valeurTri+=6;
 		else if (valeur == "7")
 			valeurTri+=7;
+	}
+	public static int getLargeur() {
+		return largeur;
+	}
+	public static void setLargeur(int largeur) {
+		Carte.largeur = largeur;
+	}
+	public String getValeur() {
+		return valeur;
+	}
+	public void setValeur(String valeur) {
+		this.valeur = valeur;
+	}
+	public boolean isJouee() {
+		return jouee;
+	}
+	public void setJouee(boolean jouee) {
+		this.jouee = jouee;
+	}
+	public String getCouleur() {
+		return couleur;
+	}
+	public void setCouleur(String couleur) {
+		this.couleur = couleur;
+	}
+	public int getValeurTri() {
+		return valeurTri;
+	}
+	public void setValeurTri(int valeurTri) {
+		this.valeurTri = valeurTri;
+	}
+	public Image getPicture(int num) {
+		if (num != 0 && num != 1){
+			throw new IllegalArgumentException();
+		}
+		return picture[num];
+	}
+	public void setPicture(Image[] picture) {
+		this.picture = picture;
+	}
+	public int getRangAtout() {
+		return RangAtout;
+	}
+	public void setRangAtout(int rangAtout) {
+		RangAtout = rangAtout;
+	}
+	public int getRangNonAtout() {
+		return RangNonAtout;
+	}
+	public void setRangNonAtout(int rangNonAtout) {
+		RangNonAtout = rangNonAtout;
 	}
 }
 

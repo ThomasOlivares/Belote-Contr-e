@@ -36,7 +36,7 @@ public class Annonce{
 			val = "Passe";
 		else
 			val = Integer.toString(valeur);
-		return "Annonce de " + val + " " + couleur + " par " + Fenetre.noms[joueur] + 
+		return "Annonce de " + val + " " + couleur + " par " + Fenetre.getNom(joueur) + 
 				((contre) ? " contrée " : "") + ((surcontre) ? "et surcontrée" : "");
 	}
 	

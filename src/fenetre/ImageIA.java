@@ -14,8 +14,8 @@ public class ImageIA extends JLabel{
 	private Image[] picture = new Image[2];
 	
 	public ImageIA (Carte carte){
-		picture[0]=carte.picture[0];
-		picture[1]=carte.picture[1];
+		picture[0]=carte.getPicture(0);
+		picture[1]=carte.getPicture(1);
 	}
 	public void paintComponent(Graphics g){
 		g.drawImage(this.picture[0], 0, 0, this);

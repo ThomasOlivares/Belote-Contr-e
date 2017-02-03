@@ -1,6 +1,6 @@
 
 /**
- * @author mon petit Thomas
+ * @author Thomas, Paul, Meric, Martin
  *
  */
 package fenetre;
